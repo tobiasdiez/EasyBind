@@ -21,45 +21,6 @@ jobs:
       run: chmod +x gradlew
     - name: Build
       run: ./gradlew build
-    # The following is an ugly workaround to upload snapshots:
-    # We need to enable snapshots according to https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-apache-maven-for-use-with-github-packages
-    # but there seems to be no way to do this from gradle
-    - name: Prepare maven authentication
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        mkdir -p ~/.m2
-        echo "<settings>
-                <activeProfiles>
-                  <activeProfile>GitHubPackages</activeProfile>
-                </activeProfiles>
-                <profiles>
-                  <profile>
-                    <id>GitHubPackages</id>
-                    <repositories>
-                      <repository>
-                        <id>central</id>
-                        <url>https://repo1.maven.org/maven2</url>
-                        <releases><enabled>true</enabled></releases>
-                        <snapshots><enabled>true</enabled></snapshots>
-                      </repository>
-                      <repository>
-                        <id>GitHubPackages</id>
-                        <url>https://maven.pkg.github.com/tobiasdiez/easybind</url>
-                        <releases><enabled>true</enabled></releases>
-                        <snapshots><enabled>true</enabled></snapshots>
-                      </repository>
-                    </repositories>
-                  </profile>
-                </profiles>
-                <servers>
-                  <server>
-                    <id>GitHubPackages</id>
-                    <username>tobiasdiez</username>
-                    <password>${GITHUB_TOKEN}</password>
-                  </server>
-                </servers>
-              </settings>" > ~/.m2/settings.xml
     - name: Publish to the Maven Central and Github Repository
       run: ./gradlew publish
       env:

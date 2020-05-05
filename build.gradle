@@ -78,15 +78,16 @@ publishing {
                 password = System.getenv("MAVEN_PASSWORD")
             }
         }
+        // This currently only works for released versions, as github has problems with overwriting snapshots
+        if (isReleaseVersion) {
         maven {
             name = "GitHubPackages"
             url = "https://maven.pkg.github.com/tobiasdiez/EasyBind"
-            /* Credentials set in build script using maven-repo-auth
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
             }
-            */
+        }
         }
     }
 }
