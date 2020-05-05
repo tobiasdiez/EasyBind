@@ -1,13 +1,14 @@
 package org.fxmisc.easybind;
 
-import static org.junit.Assert.*;
 import javafx.beans.binding.Binding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CombineListTest {
 

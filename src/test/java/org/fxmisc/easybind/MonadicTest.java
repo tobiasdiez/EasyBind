@@ -1,6 +1,5 @@
 package org.fxmisc.easybind;
 
-import static org.junit.Assert.*;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -8,7 +7,12 @@ import javafx.beans.property.StringProperty;
 
 import org.fxmisc.easybind.monadic.MonadicBinding;
 import org.fxmisc.easybind.monadic.PropertyBinding;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MonadicTest {
 

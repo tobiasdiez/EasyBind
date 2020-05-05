@@ -77,8 +77,12 @@ ObservableList<String> tabIds = EasyBind.map(tabPane.getTabs(), Tab::getId);
 ```
 
 In the above example, `tabIds` is updated as tabs are added and removed from `tabPane`.
+By design, the elements of the new observable are calculated on the fly whenever they are needed (e.g. if `get` is called).
+Thus, this is prefect for light-weight operations.
+If the conversion is a cost-intensive operation or the elements of the list are often accessed, then using `mapBacked` is a better option.
+Here the elements of the list are converted once and then stored in memory.
 
-An equivalent feature has been requested in [RT-35741](https://javafx-jira.kenai.com/browse/RT-35741) and is scheduled for JavaFX 9.
+An equivalent feature has been requested in [JDK-8091967](https://bugs.openjdk.java.net/browse/JDK-8091967) and is scheduled for a future JavaFX release.
 
 
 ### combine list

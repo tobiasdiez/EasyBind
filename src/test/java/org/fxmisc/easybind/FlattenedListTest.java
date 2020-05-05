@@ -1,17 +1,20 @@
 package org.fxmisc.easybind;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import org.junit.Before;
-import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class FlattenedListTest {
 
@@ -42,15 +45,14 @@ public class FlattenedListTest {
 	private StringBinding bindCOne;
 	private StringBinding bindCFour;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		a = FXCollections.observableArrayList("zero", "one", "two");
 		b = FXCollections.observableArrayList("three", "four", "five");
-		c = EasyBind.concat(a, b);
+		c = EasyBind.flatten(a, b);
 
 		aa = FXCollections.observableArrayList(a, a);
 		d = EasyBind.flatten(aa);
-
 
 		bindCOne = Bindings.stringValueAt(c, 1);
 		bindCFour = Bindings.stringValueAt(c, 4);

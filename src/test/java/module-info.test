@@ -1,0 +1,12 @@
+--add-modules
+    // Add junit5 module dependency
+    org.junit.jupiter.api
+--add-reads
+    // Make junit5 module visible
+    com.tobiasdiez.easybind=org.junit.jupiter.api
+--add-modules
+    //  Add junit5 module dependency
+    org.junit.platform.commons
+--add-reads
+    // Make junit5 module visible
+    com.tobiasdiez.easybind=org.junit.platform.commons

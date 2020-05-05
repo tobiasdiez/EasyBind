@@ -127,6 +127,18 @@ public class EasyBind {
         return new FlattenedList<>(FXCollections.observableArrayList(sources));
     }
 
+    /**
+     * Creates a new list in which each element is converted using the provided mapping.
+     * All changes to the underlying list are propagated to the converted list.
+     *
+     * In contrast to {@link #map(ObservableList, Function)},
+     * the items are converted when the are inserted instead of when they are accessed.
+     * Thus the initial CPU overhead and memory consumption is higher but the access to list items is quicker.
+     */
+    public static <A, B> ObservableList<B> mapBacked(ObservableList<A> source, Function<A, B> mapper) {
+        return new MappedBackedList<>(source, mapper);
+    }
+
     public static <A, B, R> MonadicBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,

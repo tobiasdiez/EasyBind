@@ -1,13 +1,13 @@
 package org.fxmisc.easybind;
 
-import static org.junit.Assert.*;
-
 import java.util.Arrays;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ListBindText {
 
