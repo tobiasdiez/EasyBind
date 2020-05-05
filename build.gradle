@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.hibernate.build.maven-repo-auth' version '3.0.2'
 }
 
 repositories {
@@ -80,13 +81,12 @@ publishing {
         maven {
             name = "GitHubPackages"
             url = "https://maven.pkg.github.com/tobiasdiez/EasyBind"
+            /* Credentials set in build script using maven-repo-auth
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
             }
-            mavenContent {
-                snapshotsOnly()
-            }
+            */
         }
     }
 }
