@@ -63,9 +63,22 @@ publishing {
     }
     repositories {
         maven {
+            name = "OSSRH"
             def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
             url = isReleaseVersion ? releasesRepoUrl : snapshotsRepoUrl
+            credentials = {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/tobiasdiez/EasyBind"
+            credentials = {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
