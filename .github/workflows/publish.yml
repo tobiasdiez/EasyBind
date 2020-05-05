@@ -28,7 +28,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        mkdir ~/.m2
+        mkdir -p ~/.m2
         echo "<settings>
                 <activeProfiles>
                   <activeProfile>GitHubPackages</activeProfile>
