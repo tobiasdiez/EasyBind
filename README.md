@@ -220,31 +220,31 @@ Use EasyBind in your project
 
 ### Stable release
 
-Current stable release is 1.0.3.
+Current stable release is 1.2.0.
 
 #### Maven coordinates
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| org.fxmisc.easybind | easybind    | 1.0.3   |
+| com.tobiasdiez      | easybind    | 1.2.0   |
 
 #### Gradle example
 
 ```groovy
 dependencies {
-    compile group: 'org.fxmisc.easybind', name: 'easybind', version: '1.0.3'
+    compile group: 'com.tobiasdiez', name: 'easybind', version: '1.2.0'
 }
 ```
 
 #### Sbt example
 
 ```scala
-libraryDependencies += "org.fxmisc.easybind" % "easybind" % "1.0.3"
+libraryDependencies += "com.tobiasdiez" % "easybind" % "1.2.0"
 ```
 
 #### Manual download
 
-[Download](https://github.com/TomasMikula/EasyBind/releases/download/v1.0.3/easybind-1.0.3.jar) the JAR file and place it on your classpath.
+[Download](https://github.com/tobiasdiez/EasyBind/releases) the JAR file and place it on your classpath.
 
 
 ### Snapshot releases
