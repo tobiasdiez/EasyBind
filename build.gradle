@@ -1,8 +1,9 @@
 plugins {
     id 'java-library'
-    id 'org.javamodularity.moduleplugin' version '1.6.0'
+    //id 'org.javamodularity.moduleplugin' version '1.6.0'
     id 'maven-publish'
     id 'signing'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 repositories {
@@ -25,6 +26,11 @@ dependencies {
 java {
     withJavadocJar()
     withSourcesJar()
+}
+
+javafx {
+    version = "14"
+    modules = [ 'javafx.base' ]
 }
 
 publishing {

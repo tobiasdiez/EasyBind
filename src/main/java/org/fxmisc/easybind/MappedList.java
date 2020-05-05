@@ -23,6 +23,11 @@ class MappedList<E, F> extends TransformationList<E, F> {
     }
 
     @Override
+    public int getViewIndex(int index) {
+        return index;
+    }
+
+    @Override
     public E get(int index) {
         return mapper.apply(getSource().get(index));
     }
