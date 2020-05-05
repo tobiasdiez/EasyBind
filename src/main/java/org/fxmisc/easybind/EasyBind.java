@@ -73,7 +73,7 @@ public class EasyBind {
 
     public static <T, U> MonadicBinding<U> map(
             ObservableValue<T> src,
-            Function<T, U> f) {
+            Function<? super T, ? extends U> f) {
         return new PreboundBinding<U>(src) {
             @Override
             protected U computeValue() {
