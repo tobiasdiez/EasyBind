@@ -92,12 +92,11 @@ publishing {
     }
 }
 
-/*
 signing {
     required = isReleaseVersion
+    useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
     sign publishing.publications.mavenJava
 }
-*/
 
 test {
     useJUnitPlatform()
@@ -110,35 +109,3 @@ test {
         showStackTraces true
     }
 }
-/*
-javadoc {
-    // ignore missing Javadoc comments or tags
-    options.addStringOption('Xdoclint:all,-missing', '-quiet')
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-artifacts {
-    archives jar
-
-    archives javadocJar
-    archives sourcesJar
-}
-
-
-signing {
-    sign configurations.archives
-}
-
-signArchives.onlyIf {
-    project.hasProperty('signing.keyId') && project.hasProperty('signing.password') && project.hasProperty('signing.secretKeyRingFile')
-}
-*/
