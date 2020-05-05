@@ -122,7 +122,8 @@ public class EasyBind {
         return new FlattenedList<>(sources);
     }
 
-    public static <T> ObservableList<T> flatten(
+    @SafeVarargs
+    public static <T> ObservableList<T> concat(
             ObservableList<? extends T>... sources) {
         return new FlattenedList<>(FXCollections.observableArrayList(sources));
     }

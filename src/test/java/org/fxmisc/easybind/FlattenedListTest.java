@@ -49,7 +49,7 @@ public class FlattenedListTest {
 	public void setup() {
 		a = FXCollections.observableArrayList("zero", "one", "two");
 		b = FXCollections.observableArrayList("three", "four", "five");
-		c = EasyBind.flatten(a, b);
+		c = EasyBind.concat(a, b);
 
 		aa = FXCollections.observableArrayList(a, a);
 		d = EasyBind.flatten(aa);
