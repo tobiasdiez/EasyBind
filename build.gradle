@@ -31,7 +31,6 @@ java {
 javafx {
     version = "14"
     modules = [ 'javafx.base' ]
-    configuration = 'compileOnly'
 }
 
 publishing {

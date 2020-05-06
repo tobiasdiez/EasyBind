@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 ### Changed
+- Renamed package to `com.tobiasdiez.easybind`
 ### Removed
 
 ## [1.2.2] - 2020-05-05

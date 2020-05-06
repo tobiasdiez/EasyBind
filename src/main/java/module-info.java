@@ -1,7 +1,7 @@
 module com.tobiasdiez.easybind {
-    exports org.fxmisc.easybind;
-    exports org.fxmisc.easybind.monadic;
-    exports org.fxmisc.easybind.select;
+    exports com.tobiasdiez.easybind;
+    exports com.tobiasdiez.easybind.monadic;
+    exports com.tobiasdiez.easybind.select;
 
     requires javafx.base;
 }
