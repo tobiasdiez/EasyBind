@@ -220,26 +220,26 @@ Use EasyBind in your project
 
 ### Stable release
 
-Current stable release is 1.2.1.
+Current stable release is 1.2.2.
 
 #### Maven coordinates
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| com.tobiasdiez      | easybind    | 1.2.1   |
+| com.tobiasdiez      | easybind    | 1.2.2   |
 
 #### Gradle example
 
 ```groovy
 dependencies {
-    compile group: 'com.tobiasdiez', name: 'easybind', version: '1.2.1'
+    compile group: 'com.tobiasdiez', name: 'easybind', version: '1.2.2'
 }
 ```
 
 #### Sbt example
 
 ```scala
-libraryDependencies += "com.tobiasdiez" % "easybind" % "1.2.1"
+libraryDependencies += "com.tobiasdiez" % "easybind" % "1.2.2"
 ```
 
 #### Manual download
