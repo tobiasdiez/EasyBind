@@ -4,8 +4,16 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 ### Changed
-- Renamed package to `com.tobiasdiez.easybind`
+- Renamed package to `com.tobiasdiez.easybind`.
+- Split `MonadicBinding` into a part which is really concerned with optionals (new `ObervableOptionalValue`) and one which provides helper methods for a fluent interface for normal bindings (new `EasyBinding`).
+- Renamed `flatMap` to `mapObservable` to avoid clashes with the corresponding method in `Optional`.
+- Completely reworked bindings for optional values: 
+  - New methods in `ObervableOptionalValue` having `Value` in the name provide convenient access to the corresponding method of an optional. For example, `getValueOrElse` and `isValuePresent` are analogs of `Optional.getOrElse` and `Optional.isPresent`.
+
 ### Removed
+- Removed `EasyBind.filter(ObservableValue<T> source, Predicate<? super T> predicate)`. Use `EasyBind.wrapNullable(source).filter(predicate)` instead. 
+- Removed `EasyBind.orElse(ObservableValue<? extends T> source, T other)`. Use `EasyBind.wrapNullable(source).orElse(other)` instead. 
+
 
 ## [1.2.2] - 2020-05-05
 ### Added

@@ -9,11 +9,9 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 
-import com.tobiasdiez.easybind.monadic.MonadicBinding;
-import com.tobiasdiez.easybind.monadic.PropertyBinding;
+import com.tobiasdiez.easybind.optional.PropertyBinding;
 
-abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>>
-extends ObjectBinding<U> implements MonadicBinding<U> {
+abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>> extends ObjectBinding<U> implements EasyBinding<U> {
     private final ObservableValue<T> src;
     private final Function<? super T, O> mapper;
 

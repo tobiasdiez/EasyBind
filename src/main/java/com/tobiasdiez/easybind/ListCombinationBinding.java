@@ -12,10 +12,7 @@ import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
 
-import com.tobiasdiez.easybind.monadic.MonadicBinding;
-
-class ListCombinationBinding<T, U> extends ObjectBinding<U> implements
-        MonadicBinding<U> {
+class ListCombinationBinding<T, U> extends ObjectBinding<U> implements EasyBinding<U> {
 
     private final ListChangeListener<ObservableValue<? extends T>> listListener = ch -> sourceChanged(ch);
     private final InvalidationListener elemListener = obs -> elementInvalidated();

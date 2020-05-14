@@ -1,12 +1,14 @@
 package com.tobiasdiez.easybind;
 
+import java.util.Optional;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.tobiasdiez.easybind.monadic.MonadicBinding;
-import com.tobiasdiez.easybind.monadic.PropertyBinding;
+import com.tobiasdiez.easybind.optional.OptionalBinding;
+import com.tobiasdiez.easybind.optional.PropertyBinding;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,14 +27,14 @@ public class MonadicTest {
     }
 
     @Test
-    public void flatMapTest() {
+    public void mapObsTest() {
         Property<A> base = new SimpleObjectProperty<>();
-        MonadicBinding<String> flat = EasyBind.monadic(base).flatMap(a -> a.b).flatMap(b -> b.s);
+        OptionalBinding<String> flat = EasyBind.wrapNullable(base).mapObservable(a -> a.b).mapObservable(b -> b.s);
 
         Counter invalidationCounter = new Counter();
         flat.addListener(obs -> invalidationCounter.inc());
 
-        assertNull(flat.getValue());
+        assertEquals(Optional.empty(), flat.getValue());
 
         A a = new A();
         B b = new B();
@@ -40,51 +42,51 @@ public class MonadicTest {
         a.b.setValue(b);
         base.setValue(a);
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("s1", flat.getValue());
+        assertEquals(Optional.of("s1"), flat.getValue());
 
         a.b.setValue(new B());
         assertEquals(1, invalidationCounter.getAndReset());
-        assertNull(flat.getValue());
+        assertEquals(Optional.empty(), flat.getValue());
 
         b.s.setValue("s2");
         assertEquals(0, invalidationCounter.getAndReset());
-        assertNull(flat.getValue());
+        assertEquals(Optional.empty(), flat.getValue());
 
         a.b.getValue().s.setValue("x");
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("x", flat.getValue());
+        assertEquals(Optional.of("x"), flat.getValue());
 
         a.b.setValue(null);
         assertEquals(1, invalidationCounter.getAndReset());
-        assertNull(flat.getValue());
+        assertEquals(Optional.empty(), flat.getValue());
 
         a.b.setValue(b);
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("s2", flat.getValue());
+        assertEquals(Optional.of("s2"), flat.getValue());
     }
 
     @Test
     public void selectPropertyTest() {
         Property<A> base = new SimpleObjectProperty<>();
-        PropertyBinding<String> selected = EasyBind.monadic(base).flatMap(a -> a.b).selectProperty(b -> b.s);
+        PropertyBinding<String> selected = EasyBind.wrapNullable(base).mapObservable(a -> a.b).selectProperty(b -> b.s);
 
         Counter invalidationCounter = new Counter();
         selected.addListener(obs -> invalidationCounter.inc());
 
-        assertNull(selected.get());
+        assertNull(selected.getValue());
 
         selected.setValue("will be discarded");
-        assertNull(selected.get());
+        assertNull(selected.getValue());
         assertEquals(0, invalidationCounter.getAndReset());
 
         Property<String> src = new SimpleStringProperty();
 
         selected.bind(src);
-        assertNull(selected.get());
+        assertNull(selected.getValue());
         assertEquals(0, invalidationCounter.getAndReset());
 
         src.setValue("1");
-        assertNull(selected.get());
+        assertNull(selected.getValue());
         assertEquals(0, invalidationCounter.getAndReset());
 
         A a = new A();
@@ -94,12 +96,12 @@ public class MonadicTest {
         base.setValue(a);
 
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("1", selected.get());
+        assertEquals("1", selected.getValue());
         assertEquals("1", b.s.getValue());
 
         src.setValue("2");
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("2", selected.get());
+        assertEquals("2", selected.getValue());
         assertEquals("2", b.s.getValue());
 
         B b2 = new B();
@@ -107,29 +109,29 @@ public class MonadicTest {
         a.b.setValue(b2);
         assertEquals(1, invalidationCounter.getAndReset());
         assertEquals("2", b2.s.getValue());
-        assertEquals("2", selected.get());
+        assertEquals("2", selected.getValue());
 
         src.setValue("3");
         assertEquals(1, invalidationCounter.getAndReset());
         assertEquals("3", b2.s.getValue());
-        assertEquals("3", selected.get());
+        assertEquals("3", selected.getValue());
         assertEquals("2", b.s.getValue());
 
         base.setValue(null);
         assertEquals(1, invalidationCounter.getAndReset());
-        assertNull(selected.get());
+        assertNull(selected.getValue());
         assertFalse(b2.s.isBound());
 
         base.setValue(a);
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("3", selected.get());
+        assertEquals("3", selected.getValue());
         assertTrue(b2.s.isBound());
 
         selected.unbind();
         assertEquals(0, invalidationCounter.getAndReset());
         src.setValue("4");
         assertEquals("3", b2.s.getValue());
-        assertEquals("3", selected.get());
+        assertEquals("3", selected.getValue());
         assertEquals("2", b.s.getValue());
 
         a.b.setValue(b);
@@ -145,18 +147,18 @@ public class MonadicTest {
     @Test
     public void selectPropertyResetTest() {
         Property<A> base = new SimpleObjectProperty<>();
-        PropertyBinding<String> selected = EasyBind.monadic(base).flatMap(a -> a.b).selectProperty(b -> b.s);
+        PropertyBinding<String> selected = EasyBind.wrapNullable(base).mapObservable(a -> a.b).selectProperty(b -> b.s);
         StringProperty source = new SimpleStringProperty("A");
 
         selected.bind(source, "X");
 
-        assertEquals(null, selected.get());
+        assertNull(selected.getValue());
 
         A a = new A();
         B b = new B();
         a.b.setValue(b);
         base.setValue(a);
-        assertEquals("A", selected.get());
+        assertEquals("A", selected.getValue());
         assertEquals("A", b.s.getValue());
 
         B b2 = new B();
@@ -174,21 +176,21 @@ public class MonadicTest {
         StringProperty s2 = new SimpleStringProperty("b");
         StringProperty s3 = new SimpleStringProperty("c");
 
-        MonadicBinding<String> firstNonNull = EasyBind.monadic(s1).orElse(s2).orElse(s3);
-        assertEquals("a", firstNonNull.getValue());
+        OptionalBinding<String> firstNonNull = EasyBind.wrapNullable(s1).orElse(s2).orElse(s3);
+        assertEquals(Optional.of("a"), firstNonNull.getValue());
 
         s2.set(null);
-        assertEquals("a", firstNonNull.getValue());
+        assertEquals(Optional.of("a"), firstNonNull.getValue());
 
         s1.set(null);
-        assertEquals("c", firstNonNull.getValue());
+        assertEquals(Optional.of("c"), firstNonNull.getValue());
 
         s2.set("b");
-        assertEquals("b", firstNonNull.getValue());
+        assertEquals(Optional.of("b"), firstNonNull.getValue());
 
         s2.set(null);
         s3.set(null);
-        assertNull(firstNonNull.getValue());
+        assertEquals(Optional.empty(), firstNonNull.getValue());
     }
 
 }

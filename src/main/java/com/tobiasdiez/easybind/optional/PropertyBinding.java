@@ -1,10 +1,9 @@
-package com.tobiasdiez.easybind.monadic;
+package com.tobiasdiez.easybind.optional;
 
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 
-public interface PropertyBinding<T>
-extends Property<T>, MonadicBinding<T> {
+public interface PropertyBinding<T> extends Property<T> {
 
     /**
      * Like {@link #bind(ObservableValue)}, plus whenever the underlying

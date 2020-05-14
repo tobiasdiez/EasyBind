@@ -2,12 +2,13 @@ package com.tobiasdiez.easybind;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,9 +16,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-import com.tobiasdiez.easybind.monadic.MonadicBinding;
-import com.tobiasdiez.easybind.monadic.MonadicObservableValue;
-import com.tobiasdiez.easybind.monadic.PropertyBinding;
+import com.tobiasdiez.easybind.optional.ObservableOptionalValue;
+import com.tobiasdiez.easybind.optional.OptionalWrapper;
+import com.tobiasdiez.easybind.optional.PropertyBinding;
 import com.tobiasdiez.easybind.select.SelectBuilder;
 
 /**
@@ -46,68 +47,109 @@ public class EasyBind {
     }
 
     /**
-     * Creates a thin wrapper around an observable value to make it monadic.
-     * @param o ObservableValue to wrap
-     * @return {@code o} if {@code o} is already monadic, or a thin monadic
-     * wrapper around {@code o} otherwise.
+     * Creates a wrapper around the given observable to provide convenient helper methods (for fluent style)
+     *
+     * @param value the observable to wrap
+     * @return a thin wrapper around the given observable
      */
-    public static <T> MonadicObservableValue<T> monadic(ObservableValue<T> o) {
-        if(o instanceof MonadicObservableValue) {
-            return (MonadicObservableValue<T>) o;
-        } else {
-            return new MonadicWrapper<>(o);
-        }
-    }
-
-    public static <T> MonadicBinding<T> filter(
-            ObservableValue<T> src,
-            Predicate<? super T> p) {
-        return new PreboundBinding<T>(src) {
+    public static <T> EasyObservableValue<T> wrap(ObservableValue<T> value) {
+        return new EasyObservableValue<T>() {
             @Override
-            protected T computeValue() {
-                T val = src.getValue();
-                return (val != null && p.test(val)) ? val : null;
+            public T get() {
+                return value.getValue();
+            }
+
+            @Override
+            public void addListener(ChangeListener<? super T> listener) {
+                value.addListener(listener);
+            }
+
+            @Override
+            public void removeListener(ChangeListener<? super T> listener) {
+                value.removeListener(listener);
+            }
+
+            @Override
+            public T getValue() {
+                return value.getValue();
+            }
+
+            @Override
+            public void addListener(InvalidationListener listener) {
+                value.addListener(listener);
+            }
+
+            @Override
+            public void removeListener(InvalidationListener listener) {
+                value.removeListener(listener);
             }
         };
     }
 
-    public static <T, U> MonadicBinding<U> map(
-            ObservableValue<T> src,
-            Function<? super T, ? extends U> f) {
-        return new PreboundBinding<U>(src) {
+    /**
+     * Creates a wrapper around the given observable value that provides functionality similar to an {@link Optional}.
+     *
+     * @param value the observable to wrap
+     * @return a thin wrapper around the given observable
+     */
+    public static <T> ObservableOptionalValue<T> wrapNullable(ObservableValue<T> value) {
+        return new OptionalWrapper<>(value);
+    }
+
+    /**
+     * Returns an observable consisting of the result of applying the given function to the given observable value.
+     * <p>
+     * The value passed to the {@code mapper} may be {@code null}. If this is not desired, use {@code wrapNullable(source).map(mapper)} instead.
+     *
+     * @param source the original observable value serving as input
+     * @param mapper the function to apply
+     * @return the new observable value
+     * @see #mapObservable(ObservableValue, Function)
+     */
+    public static <T, U> EasyBinding<U> map(ObservableValue<T> source, Function<? super T, ? extends U> mapper) {
+        return new EasyPreboundBinding<U>(source) {
             @Override
             protected U computeValue() {
-                return f.apply(src.getValue());
+                return mapper.apply(source.getValue());
             }
         };
     }
 
-    public static <T, U> MonadicBinding<U> flatMap(
-            ObservableValue<T> src,
-            Function<? super T, ? extends ObservableValue<U>> f) {
-        return new FlatMapBinding<>(src, f);
+    /**
+     * Returns an observable that, when the given observable value holds value {@code x}, holds the value held by the observable {@code f(x)}.
+     *
+     * @param source the original observable value serving as input
+     * @param mapper the function to apply, returning an observable value
+     * @see #map(ObservableValue, Function)
+     */
+    public static <T, O, R extends ObservableValue<O>> EasyBinding<O> mapObservable(
+            ObservableValue<T> source,
+            Function<? super T, R> mapper) {
+        return new FlatMapBinding<>(source, mapper);
     }
 
+    /**
+     * Similar to {@link #mapObservable(ObservableValue, Function)}, except the returned binding is
+     * also a property. This means you can call {@code setValue()} and
+     * {@code bind()} methods on the returned value, which delegates to the
+     * currently selected Property.
+     * <p>
+     * As the value of this ObservableValue changes, so does the selected
+     * Property. When the Property returned from this method is bound, as the
+     * selected Property changes, the previously selected property is unbound
+     * and the newly selected property is bound.
+     *
+     * <p>Note that if the currently selected property is {@code null}, then
+     * calling {@code getValue()} on the returned value will return {@code null}
+     * regardless of any prior call to {@code setValue()} or {@code bind()}.
+     *
+     * <p>Note that you need to retain a reference to the returned value to
+     * prevent it from being garbage collected.
+     */
     public static <T, U> PropertyBinding<U> selectProperty(
-            ObservableValue<T> src,
-            Function<? super T, ? extends Property<U>> f) {
-        return new FlatMapProperty<>(src, f);
-    }
-
-    public static <T> MonadicBinding<T> orElse(ObservableValue<? extends T> src, T other) {
-        return new PreboundBinding<T>(src) {
-            @Override
-            protected T computeValue() {
-                T val = src.getValue();
-                return val != null ? val : other;
-            }
-        };
-    }
-
-    public static <T> MonadicBinding<T> orElse(
-            ObservableValue<? extends T> src,
-            ObservableValue<? extends T> other) {
-        return new FirstNonNullBinding<>(src, other);
+            ObservableValue<T> source,
+            Function<? super T, ? extends Property<U>> mapper) {
+        return new FlatMapProperty<>(source, mapper);
     }
 
     public static <T, U> ObservableList<U> map(
@@ -139,11 +181,11 @@ public class EasyBind {
         return new MappedBackedList<>(source, mapper);
     }
 
-    public static <A, B, R> MonadicBinding<R> combine(
+    public static <A, B, R> EasyBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             BiFunction<A, B, R> f) {
-        return new PreboundBinding<R>(src1, src2) {
+        return new EasyPreboundBinding<R>(src1, src2) {
             @Override
             protected R computeValue() {
                 return f.apply(src1.getValue(), src2.getValue());
@@ -151,12 +193,12 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, R> MonadicBinding<R> combine(
+    public static <A, B, C, R> EasyBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             TriFunction<A, B, C, R> f) {
-        return new PreboundBinding<R>(src1, src2, src3) {
+        return new EasyPreboundBinding<R>(src1, src2, src3) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -165,13 +207,13 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, R> MonadicBinding<R> combine(
+    public static <A, B, C, D, R> EasyBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             ObservableValue<D> src4,
             TetraFunction<A, B, C, D, R> f) {
-        return new PreboundBinding<R>(src1, src2, src3, src4) {
+        return new EasyPreboundBinding<R>(src1, src2, src3, src4) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -181,14 +223,14 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, E, R> MonadicBinding<R> combine(
+    public static <A, B, C, D, E, R> EasyBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             ObservableValue<D> src4,
             ObservableValue<E> src5,
             PentaFunction<A, B, C, D, E, R> f) {
-        return new PreboundBinding<R>(src1, src2, src3, src4, src5) {
+        return new EasyPreboundBinding<R>(src1, src2, src3, src4, src5) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -198,7 +240,7 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, E, F, R> MonadicBinding<R> combine(
+    public static <A, B, C, D, E, F, R> EasyBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
@@ -206,7 +248,7 @@ public class EasyBind {
             ObservableValue<E> src5,
             ObservableValue<F> src6,
             HexaFunction<A, B, C, D, E, F, R> f) {
-        return new PreboundBinding<R>(src1, src2, src3, src4, src5, src6) {
+        return new EasyPreboundBinding<R>(src1, src2, src3, src4, src5, src6) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -216,12 +258,16 @@ public class EasyBind {
         };
     }
 
-    public static <T, R> MonadicBinding<R> combine(
+    public static <T, R> EasyBinding<R> combine(
             ObservableList<? extends ObservableValue<? extends T>> list,
             Function<? super Stream<T>, ? extends R> f) {
         return new ListCombinationBinding<>(list, f);
     }
 
+    /**
+     * Starts a selection chain. A selection chain is just a more efficient
+     * equivalent to a chain of flatMaps.
+     */
     public static <T> SelectBuilder<T> select(ObservableValue<T> selectionRoot) {
         return SelectBuilder.startAt(selectionRoot);
     }
@@ -314,14 +360,52 @@ public class EasyBind {
     /**
      * Invokes {@code subscriber} for the current and every new value of
      * {@code observable}.
+     *
      * @param observable observable value to subscribe to
      * @param subscriber action to invoke for values of {@code observable}.
      * @return a subscription that can be used to stop invoking subscriber
-     * for any further {@code observable} changes.
+     *         for any further {@code observable} changes.
      */
     public static <T> Subscription subscribe(ObservableValue<T> observable, Consumer<? super T> subscriber) {
         subscriber.accept(observable.getValue());
         ChangeListener<? super T> listener = (obs, oldValue, newValue) -> subscriber.accept(newValue);
+        return subscribe(observable, listener);
+    }
+
+    /**
+     * Adds an invalidation listener and returns a Subscription that can be
+     * used to remove that listener.
+     *
+     * <pre>
+     * {@code
+     * Subscription s = observable.subscribe(obs -> doSomething());
+     *
+     * // later
+     * s.unsubscribe();
+     * }</pre>
+     *
+     * is equivalent to
+     *
+     * <pre>
+     * {@code
+     * InvalidationListener l = obs -> doSomething();
+     * observable.addListener(l);
+     *
+     * // later
+     * observable.removeListener();
+     * }</pre>
+     */
+    public static <T> Subscription subscribe(ObservableValue<T> observable, InvalidationListener listener) {
+        observable.addListener(listener);
+        return () -> observable.removeListener(listener);
+    }
+
+    /**
+     * Adds a change listener and returns a Subscription that can be
+     * used to remove that listener. See the example at
+     * {@link #subscribe(ObservableValue, InvalidationListener)}.
+     */
+    public static <T> Subscription subscribe(ObservableValue<T> observable, ChangeListener<? super T> listener) {
         observable.addListener(listener);
         return () -> observable.removeListener(listener);
     }

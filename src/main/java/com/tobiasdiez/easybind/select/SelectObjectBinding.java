@@ -4,9 +4,9 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 
-import com.tobiasdiez.easybind.monadic.MonadicBinding;
+import com.tobiasdiez.easybind.EasyBinding;
 
-class SelectObjectBinding<T, U> extends ObjectBinding<U> implements MonadicBinding<U> {
+class SelectObjectBinding<T, U> extends ObjectBinding<U> implements EasyBinding<U> {
     private final ObservableValue<T> root;
     private final NestedSelectionElement<T, U> nestedSelection;
     private final InvalidationListener rootInvalidationListener;

@@ -1,61 +1,58 @@
-package com.tobiasdiez.easybind;
+package com.tobiasdiez.easybind.optional;
+
+import java.util.Optional;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.WeakInvalidationListener;
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 
-import com.tobiasdiez.easybind.monadic.MonadicBinding;
-
-class FirstNonNullBinding<T> extends ObjectBinding<T> implements MonadicBinding<T> {
+class FirstNonNullBinding<T> extends PreboundOptionalBinding<T> {
     private final ObservableValue<? extends T>[] chain;
-    private final InvalidationListener listener = obs -> srcInvalidated(obs);
+    private final InvalidationListener listener = this::srcInvalidated;
     private final InvalidationListener weakListener = new WeakInvalidationListener(listener);
 
     private int startAt = 0;
 
     @SafeVarargs
     public FirstNonNullBinding(ObservableValue<? extends T>... chain) {
+        super(chain);
+
         this.chain = chain;
-        for(int i = 0; i < chain.length; ++i) {
-            chain[i].addListener(weakListener);
+        for (ObservableValue<? extends T> observableValue : chain) {
+            observableValue.addListener(weakListener);
         }
     }
 
     @Override
     public void dispose() {
-        for(int i = 0; i < chain.length; ++i) {
-            chain[i].removeListener(weakListener);
+        for (ObservableValue<? extends T> observableValue : chain) {
+            observableValue.removeListener(weakListener);
         }
     }
 
     @Override
-    protected T computeValue() {
-        for(int i = startAt; i < chain.length; ++i) {
+    protected Optional<T> computeValue() {
+        for (int i = startAt; i < chain.length; ++i) {
             T val = chain[i].getValue();
-            if(val != null) {
+            if (val != null) {
                 startAt = i;
-                return val;
+                return Optional.of(val);
             }
         }
         startAt = chain.length;
-        return null;
+        return Optional.empty();
     }
 
     private void srcInvalidated(Observable src) {
         for(int i = 0; i < chain.length; ++i) {
             if(chain[i] == src) {
-                srcInvalidated(i);
+                if (i <= startAt) {
+                    startAt = i;
+                    invalidate();
+                }
                 break;
             }
-        }
-    }
-
-    private void srcInvalidated(int index) {
-        if(index <= startAt) {
-            startAt = index;
-            invalidate();
         }
     }
 }
