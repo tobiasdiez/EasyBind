@@ -8,9 +8,9 @@ import javafx.beans.value.ObservableValue;
 
 class FirstNonNullBinding<T> extends PreboundOptionalBinding<T> {
     private final ObservableValue<? extends T>[] chain;
+    private final InvalidationListener listener = this::srcInvalidated;
     private final InvalidationListener weakListener = new WeakInvalidationListener(listener);
     private int startAt = 0;
-    private final InvalidationListener listener = this::srcInvalidated;
 
     @SafeVarargs
     public FirstNonNullBinding(ObservableValue<? extends T>... chain) {
