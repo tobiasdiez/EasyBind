@@ -47,17 +47,17 @@ public interface EasyObservableValue<T> extends ObservableObjectValue<T> {
     }
 
     /**
-     * @see EasyBind#subscribe(ObservableValue, InvalidationListener)
+     * @see EasyBind#listen(ObservableValue, InvalidationListener)
      */
-    default Subscription subscribe(InvalidationListener listener) {
-        return EasyBind.subscribe(this, listener);
+    default Subscription listen(InvalidationListener listener) {
+        return EasyBind.listen(this, listener);
     }
 
     /**
-     * @see EasyBind#subscribe(ObservableValue, ChangeListener)
+     * @see EasyBind#listen(ObservableValue, ChangeListener)
      */
-    default Subscription subscribe(ChangeListener<? super T> listener) {
-        return EasyBind.subscribe(this, listener);
+    default Subscription listen(ChangeListener<? super T> listener) {
+        return EasyBind.listen(this, listener);
     }
 
     /**

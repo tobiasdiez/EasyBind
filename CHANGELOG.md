@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Renamed `flatMap` to `mapObservable` to avoid clashes with the corresponding method in `Optional`.
 - Completely reworked bindings for optional values: 
   - New methods in `ObervableOptionalValue` having `Value` in the name provide convenient access to the corresponding method of an optional. For example, `getValueOrElse` and `isValuePresent` are analogs of `Optional.getOrElse` and `Optional.isPresent`.
+- Renamed subscribe methods that accept listeners to `listen`, which invoke the given listener every time the value changes. In contrast, the `subscribe` method also invokes the given subscriber upon registration. 
 
 ### Removed
 - Removed `EasyBind.filter(ObservableValue<T> source, Predicate<? super T> predicate)`. Use `EasyBind.wrapNullable(source).filter(predicate)` instead. 

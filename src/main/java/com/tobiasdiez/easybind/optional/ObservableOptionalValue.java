@@ -148,14 +148,14 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
 
     /**
      * Adds a change listener and returns a {@link Subscription} that can be used to remove that listener.
-     * The listener will only be invoked if the new value is present, use {@link #subscribe(ChangeListener)} if you want to be notified about empty values as well.
+     * The listener will only be invoked if the new value is present, use {@link #listen(ChangeListener)} if you want to be notified about empty values as well.
      *
-     * @see EasyBind#subscribe(ObservableValue, ChangeListener)
+     * @see EasyBind#listen(ObservableValue, ChangeListener)
      */
-    default Subscription subscribeToValues(SimpleChangeListener<? super T> listener) {
+    default Subscription listenToValues(SimpleChangeListener<? super T> listener) {
         ChangeListener<Optional<T>> listenerOpt = (observable, oldValue, newValue) ->
                 newValue.ifPresent(newVal -> listener.changed(oldValue.orElse(null), newVal));
-        return subscribe(listenerOpt);
+        return listen(listenerOpt);
     }
 
     /**
@@ -167,9 +167,8 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      * @see EasyBind#subscribe(ObservableValue, Consumer)
      */
     default Subscription subscribeToValues(Consumer<? super T> subscriber) {
-        ChangeListener<Optional<T>> listenerOpt = (observable, oldValue, newValue) ->
-                newValue.ifPresent(subscriber);
-        return EasyBind.subscribe(this, listenerOpt);
+        Consumer<Optional<T>> subscriberOpt = newValue -> newValue.ifPresent(subscriber);
+        return EasyBind.subscribe(this, subscriberOpt);
     }
 
     /**
@@ -180,9 +179,9 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
     }
 
     /**
-     * @see EasyBind#subscribe(ObservableValue, ChangeListener)
+     * @see EasyBind#listen(ObservableValue, ChangeListener)
      */
-    default Subscription subscribe(ChangeListener<? super Optional<T>> listener) {
-        return EasyBind.subscribe(this, listener);
+    default Subscription listen(ChangeListener<? super Optional<T>> listener) {
+        return EasyBind.listen(this, listener);
     }
 }

@@ -369,7 +369,7 @@ public class EasyBind {
     public static <T> Subscription subscribe(ObservableValue<T> observable, Consumer<? super T> subscriber) {
         subscriber.accept(observable.getValue());
         ChangeListener<? super T> listener = (obs, oldValue, newValue) -> subscriber.accept(newValue);
-        return subscribe(observable, listener);
+        return listen(observable, listener);
     }
 
     /**
@@ -378,7 +378,7 @@ public class EasyBind {
      *
      * <pre>
      * {@code
-     * Subscription s = observable.subscribe(obs -> doSomething());
+     * Subscription s = observable.listen(obs -> doSomething());
      *
      * // later
      * s.unsubscribe();
@@ -395,7 +395,7 @@ public class EasyBind {
      * observable.removeListener();
      * }</pre>
      */
-    public static <T> Subscription subscribe(ObservableValue<T> observable, InvalidationListener listener) {
+    public static <T> Subscription listen(ObservableValue<T> observable, InvalidationListener listener) {
         observable.addListener(listener);
         return () -> observable.removeListener(listener);
     }
@@ -403,9 +403,9 @@ public class EasyBind {
     /**
      * Adds a change listener and returns a Subscription that can be
      * used to remove that listener. See the example at
-     * {@link #subscribe(ObservableValue, InvalidationListener)}.
+     * {@link #listen(ObservableValue, InvalidationListener)}.
      */
-    public static <T> Subscription subscribe(ObservableValue<T> observable, ChangeListener<? super T> listener) {
+    public static <T> Subscription listen(ObservableValue<T> observable, ChangeListener<? super T> listener) {
         observable.addListener(listener);
         return () -> observable.removeListener(listener);
     }
