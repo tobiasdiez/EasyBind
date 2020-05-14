@@ -109,3 +109,8 @@ test {
         showStackTraces true
     }
 }
+
+tasks.withType(Javadoc) {
+    // Ignore warnings because of missing elements
+    options.addStringOption('Xdoclint:all,-missing', '-quiet')
+}
