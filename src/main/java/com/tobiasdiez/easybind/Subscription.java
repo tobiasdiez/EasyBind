@@ -2,6 +2,26 @@ package com.tobiasdiez.easybind;
 
 @FunctionalInterface
 public interface Subscription {
+    static final Subscription EMPTY = () -> {
+    };
+
+    /**
+     * Returns a new aggregate subscription whose {@link #unsubscribe()}
+     * method calls {@code unsubscribe()} on all arguments to this method.
+     */
+    static Subscription multi(Subscription... subs) {
+        switch (subs.length) {
+            case 0:
+                return EMPTY;
+            case 1:
+                return subs[0];
+            case 2:
+                return new BiSubscription(subs[0], subs[1]);
+            default:
+                return new MultiSubscription(subs);
+        }
+    }
+
     void unsubscribe();
 
     /**
@@ -11,21 +31,6 @@ public interface Subscription {
      */
     default Subscription and(Subscription other) {
         return new BiSubscription(this, other);
-    }
-
-    static final Subscription EMPTY = () -> {};
-
-    /**
-     * Returns a new aggregate subscription whose {@link #unsubscribe()}
-     * method calls {@code unsubscribe()} on all arguments to this method.
-     */
-    static Subscription multi(Subscription... subs) {
-        switch(subs.length) {
-            case 0: return EMPTY;
-            case 1: return subs[0];
-            case 2: return new BiSubscription(subs[0], subs[1]);
-            default: return new MultiSubscription(subs);
-        }
     }
 }
 
@@ -54,7 +59,7 @@ class MultiSubscription implements Subscription {
 
     @Override
     public void unsubscribe() {
-        for(Subscription s: subscriptions) {
+        for (Subscription s : subscriptions) {
             s.unsubscribe();
         }
     }

@@ -11,9 +11,7 @@ class SelectObjectBinding<T, U> extends ObjectBinding<U> implements EasyBinding<
     private final NestedSelectionElement<T, U> nestedSelection;
     private final InvalidationListener rootInvalidationListener;
 
-    public SelectObjectBinding(
-            ObservableValue<T> root,
-            NestedSelectionElementFactory<T, U> nestedSelectionFactory) {
+    public SelectObjectBinding(ObservableValue<T> root, NestedSelectionElementFactory<T, U> nestedSelectionFactory) {
         this.root = root;
         nestedSelection = nestedSelectionFactory.create(this::invalidate);
         rootInvalidationListener = obs -> {
@@ -25,9 +23,9 @@ class SelectObjectBinding<T, U> extends ObjectBinding<U> implements EasyBinding<
 
     @Override
     protected U computeValue() {
-        if(!nestedSelection.isConnected()) {
+        if (!nestedSelection.isConnected()) {
             T rootVal = root.getValue();
-            if(rootVal == null) {
+            if (rootVal == null) {
                 return null;
             }
             nestedSelection.connect(rootVal);

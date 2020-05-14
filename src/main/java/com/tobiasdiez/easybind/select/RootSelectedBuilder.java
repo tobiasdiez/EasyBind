@@ -12,8 +12,7 @@ class RootSelectedBuilder<T> implements ParentSelectedBuilder<T> {
     }
 
     @Override
-    public <U> EasyBinding<U> create(
-            NestedSelectionElementFactory<T, U> nestedSelectionFactory) {
+    public <U> EasyBinding<U> create(NestedSelectionElementFactory<T, U> nestedSelectionFactory) {
         return new SelectObjectBinding<T, U>(root, nestedSelectionFactory);
     }
 }

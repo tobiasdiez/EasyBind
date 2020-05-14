@@ -1,7 +1,6 @@
 package com.tobiasdiez.easybind.optional;
 
 import java.util.Optional;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.WeakInvalidationListener;
@@ -9,10 +8,9 @@ import javafx.beans.value.ObservableValue;
 
 class FirstNonNullBinding<T> extends PreboundOptionalBinding<T> {
     private final ObservableValue<? extends T>[] chain;
-    private final InvalidationListener listener = this::srcInvalidated;
     private final InvalidationListener weakListener = new WeakInvalidationListener(listener);
-
     private int startAt = 0;
+    private final InvalidationListener listener = this::srcInvalidated;
 
     @SafeVarargs
     public FirstNonNullBinding(ObservableValue<? extends T>... chain) {
@@ -45,8 +43,8 @@ class FirstNonNullBinding<T> extends PreboundOptionalBinding<T> {
     }
 
     private void srcInvalidated(Observable src) {
-        for(int i = 0; i < chain.length; ++i) {
-            if(chain[i] == src) {
+        for (int i = 0; i < chain.length; ++i) {
+            if (chain[i] == src) {
                 if (i <= startAt) {
                     startAt = i;
                     invalidate();

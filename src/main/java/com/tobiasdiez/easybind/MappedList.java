@@ -3,7 +3,6 @@ package com.tobiasdiez.easybind;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.TransformationList;
@@ -83,7 +82,7 @@ class MappedList<E, F> extends TransformationList<E, F> {
             @Override
             public List<E> getRemoved() {
                 ArrayList<E> res = new ArrayList<>(c.getRemovedSize());
-                for(F e: c.getRemoved()) {
+                for (F e : c.getRemoved()) {
                     res.add(mapper.apply(e));
                 }
                 return res;

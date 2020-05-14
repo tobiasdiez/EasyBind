@@ -1,13 +1,12 @@
 package com.tobiasdiez.easybind.select;
 
 import java.util.function.Function;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 
 class LeafSelectionElement<T, U> implements NestedSelectionElement<T, U> {
-    private final InvalidationListener observableInvalidationListener = obs -> observableInvalidated();
     private final Runnable onInvalidation;
+    private final InvalidationListener observableInvalidationListener = obs -> observableInvalidated();
     private final Function<? super T, ObservableValue<U>> selector;
 
     private ObservableValue<U> observable = null;
@@ -19,7 +18,7 @@ class LeafSelectionElement<T, U> implements NestedSelectionElement<T, U> {
 
     @Override
     public void connect(T baseVal) {
-        if(isConnected()) {
+        if (isConnected()) {
             throw new IllegalStateException("Already connected");
         }
 
@@ -29,7 +28,7 @@ class LeafSelectionElement<T, U> implements NestedSelectionElement<T, U> {
 
     @Override
     public void disconnect() {
-        if(isConnected()) {
+        if (isConnected()) {
             observable.removeListener(observableInvalidationListener);
             observable = null;
         }
@@ -42,7 +41,7 @@ class LeafSelectionElement<T, U> implements NestedSelectionElement<T, U> {
 
     @Override
     public U getValue() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new IllegalStateException("Not connected");
         }
 

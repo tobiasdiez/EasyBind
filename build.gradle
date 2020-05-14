@@ -30,7 +30,7 @@ java {
 
 javafx {
     version = "14"
-    modules = [ 'javafx.base' ]
+    modules = ['javafx.base']
 }
 
 publishing {
@@ -80,14 +80,14 @@ publishing {
         }
         // This currently only works for released versions, as github has problems with overwriting snapshots
         if (isReleaseVersion) {
-        maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/tobiasdiez/EasyBind"
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/tobiasdiez/EasyBind"
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
             }
-        }
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.tobiasdiez.easybind;
 
 import java.util.Optional;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,20 +10,9 @@ import com.tobiasdiez.easybind.optional.OptionalBinding;
 import com.tobiasdiez.easybind.optional.PropertyBinding;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MonadicTest {
-
-    private static class A {
-        public final Property<B> b = new SimpleObjectProperty<>();
-    }
-
-    private static class B {
-        public final Property<String> s = new SimpleStringProperty();
-    }
 
     @Test
     public void mapObsTest() {
@@ -192,6 +180,14 @@ public class MonadicTest {
         s2.set(null);
         s3.set(null);
         assertEquals(Optional.empty(), firstNonNull.getValue());
+    }
+
+    private static class A {
+        public final Property<B> b = new SimpleObjectProperty<>();
+    }
+
+    private static class B {
+        public final Property<String> s = new SimpleStringProperty();
     }
 
 }

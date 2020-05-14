@@ -2,7 +2,6 @@ package com.tobiasdiez.easybind;
 
 import java.util.Arrays;
 import java.util.List;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;
@@ -12,182 +11,180 @@ import javafx.collections.ObservableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FlattenedListTest {
 
-	abstract class CountedChangeListener<E> implements ListChangeListener<E> {
+    private final CountedChangeListener<String> failOnRunListener = new CountedChangeListener<String>() {
+        @Override
+        public void actualChange(Change c) {
+            fail("Should not be called, d is not changed.");
+        }
+    };
+    private ObservableList<String> a;
+    private ObservableList<String> b;
+    private ObservableList<String> c;
+    private ObservableList<String> d;
 
-		private int callCount = 0;
+    private ObservableList<ObservableList<? extends String>> aa;
 
-		@Override
-		public void onChanged(Change<? extends E> c) {
-			callCount++;
-			actualChange(c);
-		}
+    private StringBinding bindCOne;
+    private StringBinding bindCFour;
 
-		int getCallCount() {
-			return callCount;
-		}
+    @BeforeEach
+    public void setup() {
+        a = FXCollections.observableArrayList("zero", "one", "two");
+        b = FXCollections.observableArrayList("three", "four", "five");
+        c = EasyBind.concat(a, b);
 
-		public abstract void actualChange(Change<? extends E> c);
-	}
+        aa = FXCollections.observableArrayList(a, a);
+        d = EasyBind.flatten(aa);
 
-	private ObservableList<String> a;
-	private ObservableList<String> b;
-	private ObservableList<String> c;
-	private ObservableList<String> d;
+        bindCOne = Bindings.stringValueAt(c, 1);
+        bindCFour = Bindings.stringValueAt(c, 4);
+    }
 
-	private ObservableList<ObservableList<? extends String>> aa;
+    @Test
+    public void basicQuery() {
+        assertEquals(6, c.size());
+        assertEquals("one", bindCOne.get());
+        assertEquals("four", bindCFour.get());
+        assertEquals("five", c.get(5));
+    }
 
-	private StringBinding bindCOne;
-	private StringBinding bindCFour;
+    @Test
+    public void removeValueSub() {
 
-	@BeforeEach
-	public void setup() {
-		a = FXCollections.observableArrayList("zero", "one", "two");
-		b = FXCollections.observableArrayList("three", "four", "five");
-		c = EasyBind.concat(a, b);
+        ListChangeListener<String> checkChange = c -> {
+            assertTrue(c.wasRemoved());
+            assertEquals(1, c.getRemovedSize());
 
-		aa = FXCollections.observableArrayList(a, a);
-		d = EasyBind.flatten(aa);
+            assertEquals("one", c.getRemoved().get(0));
+        };
 
-		bindCOne = Bindings.stringValueAt(c, 1);
-		bindCFour = Bindings.stringValueAt(c, 4);
-	}
+        CountedChangeListener<String> c_index1Removed = new VerifyCountedChangeListener<>(checkChange, 1);
 
-	@Test
-	public void basicQuery() {
-		assertEquals(6, c.size());
-		assertEquals("one", bindCOne.get());
-		assertEquals("four", bindCFour.get());
-		assertEquals("five", c.get(5));
-	}
+        CountedChangeListener<String> d_index1Removed = new VerifyCountedChangeListener<>(checkChange, 2);
 
-	@Test
-	public void removeValueSub() {
+        c.addListener(c_index1Removed);
+        d.addListener(d_index1Removed);
 
-		ListChangeListener<String> checkChange = c -> {
-			assertTrue(c.wasRemoved());
-			assertEquals(1, c.getRemovedSize());
+        a.remove(1);
+        assertEquals(5, c.size());
+        assertEquals("three", c.get(2));
+        assertEquals("two", bindCOne.get());
+        assertEquals("five", bindCFour.get());
+        assertEquals(1, c_index1Removed.getCallCount());
 
-			assertEquals("one", c.getRemoved().get(0));
-		};
+        assertEquals(4, d.size());
+        assertEquals("two", d.get(1));
+        assertEquals("two", d.get(3));
+        assertEquals(1, d_index1Removed.getCallCount());
 
-		CountedChangeListener<String> c_index1Removed =
-				new VerifyCountedChangeListener<>(checkChange, 1);
+    }
 
-		CountedChangeListener<String> d_index1Removed =
-				new VerifyCountedChangeListener<>(checkChange, 2);
+    @Test
+    public void addElement() {
 
-		c.addListener(c_index1Removed);
-		d.addListener(d_index1Removed);
+        CountedChangeListener<String> c_index1Added = new VerifyCountedChangeListener<>(c -> {
+            assertTrue(c.wasAdded());
+            assertEquals(1, c.getAddedSize());
 
-		a.remove(1);
-		assertEquals(5, c.size());
-		assertEquals("three", c.get(2));
-		assertEquals("two", bindCOne.get());
-		assertEquals("five", bindCFour.get());
-		assertEquals(1, c_index1Removed.getCallCount());
+            assertEquals("x", c.getAddedSubList().get(0));
+        }, 1);
 
-		assertEquals(4, d.size());
-		assertEquals("two", d.get(1));
-		assertEquals("two", d.get(3));
-		assertEquals(1, d_index1Removed.getCallCount());
+        c.addListener(c_index1Added);
+        d.addListener(failOnRunListener);
 
-	}
+        b.add(1, "x"); // "three", "x", "four", "five"
 
-	@Test
-	public void addElement() {
+        List<String> expectedC = Arrays.asList("zero", "one", "two", "three", "x", "four", "five");
+        assertEquals(expectedC, c);
+        assertEquals("x", c.get(a.size() + 1));
+        assertEquals("x", bindCFour.get());
+        assertEquals(1, c_index1Added.getCallCount());
+    }
 
-		CountedChangeListener<String> c_index1Added =
-				new VerifyCountedChangeListener<>(c -> {
-					assertTrue(c.wasAdded());
-					assertEquals(1, c.getAddedSize());
+    @Test
+    public void setItem() {
+        ListChangeListener<String> checkChange = c -> {
+            assertTrue(c.wasAdded());
+            assertEquals(1, c.getAddedSize());
 
-					assertEquals("x", c.getAddedSubList().get(0));
-				}, 1);
+            assertEquals("null", c.getAddedSubList().get(0));
+        };
 
-		c.addListener(c_index1Added);
-		d.addListener(failOnRunListener);
+        CountedChangeListener<String> c_index0Update = new VerifyCountedChangeListener<>(checkChange, 1);
 
-		b.add(1, "x"); // "three", "x", "four", "five"
+        CountedChangeListener<String> d_index0Update = new VerifyCountedChangeListener<>(checkChange, 2);
 
-		List<String> expectedC = Arrays.asList("zero", "one", "two", "three", "x", "four", "five");
-		assertEquals(expectedC, c);
-		assertEquals("x", c.get(a.size() + 1));
-		assertEquals("x", bindCFour.get());
-		assertEquals(1, c_index1Added.getCallCount());
-	}
+        c.addListener(c_index0Update);
+        d.addListener(d_index0Update);
 
-	@Test
-	public void setItem() {
-		ListChangeListener<String> checkChange = c -> {
-			assertTrue(c.wasAdded());
-			assertEquals(1, c.getAddedSize());
+        // Trigger an "Added" event for the list.. because odd.. not Updated
+        a.set(0, "null");
 
-			assertEquals("null", c.getAddedSubList().get(0));
-		};
+        List<String> expectedC = Arrays.asList("null", "one", "two", "three", "four", "five");
+        List<String> expectedD = Arrays.asList("null", "one", "two", "null", "one", "two");
 
-		CountedChangeListener<String> c_index0Update =
-				new VerifyCountedChangeListener<>(checkChange, 1);
+        assertEquals(expectedC, c);
+        assertEquals(expectedD, d);
+        assertEquals(1, c_index0Update.getCallCount());
+        assertEquals(1, d_index0Update.getCallCount());
+    }
 
-		CountedChangeListener<String> d_index0Update =
-				new VerifyCountedChangeListener<>(checkChange, 2);
+    @Test
+    public void removeList() {
+        ListChangeListener<String> checkChange = c -> {
+            assertTrue(c.wasRemoved());
 
-		c.addListener(c_index0Update);
-		d.addListener(d_index0Update);
+            assertEquals(Arrays.asList("zero", "one", "two"), c.getRemoved());
+        };
 
-		// Trigger an "Added" event for the list.. because odd.. not Updated
-		a.set(0, "null");
+        CountedChangeListener<String> d_index0Update = new VerifyCountedChangeListener<>(checkChange, 1);
 
-		List<String> expectedC = Arrays.asList("null", "one", "two", "three", "four", "five");
-		List<String> expectedD = Arrays.asList("null", "one", "two", "null", "one", "two");
+        c.addListener(failOnRunListener);
+        d.addListener(d_index0Update);
 
-		assertEquals(expectedC, c);
-		assertEquals(expectedD, d);
-		assertEquals(1, c_index0Update.getCallCount());
-		assertEquals(1, d_index0Update.getCallCount());
-	}
+        // Trigger an "Added" event for the list.. because odd.. not Updated
 
-	@Test
-	public void removeList() {
-		ListChangeListener<String> checkChange = c -> {
-			assertTrue(c.wasRemoved());
+        aa.remove(a);
 
-			assertEquals(Arrays.asList("zero", "one", "two"), c.getRemoved());
-		};
+        List<String> expectedC = Arrays.asList("zero", "one", "two", "three", "four", "five");
+        List<String> expectedD = Arrays.asList("zero", "one", "two");
 
-		CountedChangeListener<String> d_index0Update =
-				new VerifyCountedChangeListener<>(checkChange, 1);
+        assertEquals(expectedC, c);
+        assertEquals(expectedD, d);
+        assertEquals(1, d_index0Update.getCallCount());
+    }
 
-		c.addListener(failOnRunListener);
-		d.addListener(d_index0Update);
+    abstract class CountedChangeListener<E> implements ListChangeListener<E> {
 
-		// Trigger an "Added" event for the list.. because odd.. not Updated
+        private int callCount = 0;
 
-		aa.remove(a);
+        @Override
+        public void onChanged(Change<? extends E> c) {
+            callCount++;
+            actualChange(c);
+        }
 
-		List<String> expectedC = Arrays.asList("zero", "one", "two", "three", "four", "five");
-		List<String> expectedD = Arrays.asList("zero", "one", "two");
+        int getCallCount() {
+            return callCount;
+        }
 
-		assertEquals(expectedC, c);
-		assertEquals(expectedD, d);
-		assertEquals(1, d_index0Update.getCallCount());
-	}
+        public abstract void actualChange(Change<? extends E> c);
+    }
 
-	private class VerifyCountedChangeListener<E> extends CountedChangeListener<E> {
-		private final int iterationCount;
-		private final ListChangeListener<E> checkChange;
+    private class VerifyCountedChangeListener<E> extends CountedChangeListener<E> {
+        private final int iterationCount;
+        private final ListChangeListener<E> checkChange;
 
-		VerifyCountedChangeListener(ListChangeListener<E> checkChange, int iterationCount) {
-			this.checkChange = checkChange;
-			this.iterationCount = iterationCount;
-		}
+        VerifyCountedChangeListener(ListChangeListener<E> checkChange, int iterationCount) {
+            this.checkChange = checkChange;
+            this.iterationCount = iterationCount;
+        }
 
-		@Override
+        @Override
         public void actualChange(Change<? extends E> c) {
             int iterationCount = 0;
             while (c.next()) {
@@ -197,12 +194,5 @@ public class FlattenedListTest {
 
             assertEquals(this.iterationCount, iterationCount);
         }
-	}
-
-	private final CountedChangeListener<String> failOnRunListener = new CountedChangeListener<String>() {
-		@Override
-		public void actualChange(Change c) {
-			fail("Should not be called, d is not changed.");
-		}
-	};
+    }
 }

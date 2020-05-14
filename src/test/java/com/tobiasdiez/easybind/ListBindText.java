@@ -1,7 +1,6 @@
 package com.tobiasdiez.easybind;
 
 import java.util.Arrays;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

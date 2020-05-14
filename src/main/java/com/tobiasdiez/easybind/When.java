@@ -2,7 +2,6 @@ package com.tobiasdiez.easybind;
 
 import java.util.List;
 import java.util.function.Supplier;
-
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -31,6 +30,7 @@ public final class When {
      * returned subscription. Unsubscribing the returned subscription may be
      * skipped safely only when the lifetimes of all the encapsulated condition,
      * {@code source} and {@code target} are the same.
+     *
      * @param target target of the conditional binding
      * @param source source of the conditional binding
      * @return a subscription that can be used to dispose the conditional
@@ -38,9 +38,7 @@ public final class When {
      * condition and, if the last observed value of the encapsulated condition
      * was {@code true}, unbind {@code target} from {@code source}.
      */
-    public <T> Subscription bind(
-            Property<T> target,
-            ObservableValue<? extends T> source) {
+    public <T> Subscription bind(Property<T> target, ObservableValue<? extends T> source) {
         return bind(() -> {
             target.bind(source);
             return target::unbind;
@@ -57,6 +55,7 @@ public final class When {
      * on the returned subscription. Unsubscribing the returned subscription may
      * be skipped safely only when the lifetimes of all the encapsulated
      * condition, {@code source} and {@code target} are the same.
+     *
      * @param target target of the conditional binding
      * @param source source of the conditional binding
      * @return a subscription that can be used to dispose the conditional
@@ -65,9 +64,7 @@ public final class When {
      * was {@code true}, stop the synchronization {@code target}'s content with
      * {@code source}'s content.
      */
-    public <T> Subscription listBind(
-            List<? super T> target,
-            ObservableList<? extends T> source) {
+    public <T> Subscription listBind(List<? super T> target, ObservableList<? extends T> source) {
         return bind(() -> EasyBind.listBind(target, source));
     }
 
@@ -80,25 +77,21 @@ public final class When {
 class ConditionalSubscription implements Subscription {
     private final Supplier<? extends Subscription> bindFn;
     private final ObservableValue<Boolean> condition;
+    private Subscription subscription = null;
     private final ChangeListener<Boolean> conditionListener = this::conditionChanged;
 
-    private Subscription subscription = null;
-
-    public ConditionalSubscription(
-            ObservableValue<Boolean> condition,
-            Supplier<? extends Subscription> bindFn) {
+    public ConditionalSubscription(ObservableValue<Boolean> condition, Supplier<? extends Subscription> bindFn) {
         this.condition = condition;
         this.bindFn = bindFn;
 
         condition.addListener(conditionListener);
-        if(condition.getValue()) {
+        if (condition.getValue()) {
             subscription = bindFn.get();
         }
     }
 
-    private void conditionChanged(ObservableValue<? extends Boolean> cond,
-            Boolean wasTrue, Boolean isTrue) {
-        if(isTrue) {
+    private void conditionChanged(ObservableValue<? extends Boolean> cond, Boolean wasTrue, Boolean isTrue) {
+        if (isTrue) {
             assert subscription == null;
             subscription = bindFn.get();
         } else {
@@ -111,7 +104,7 @@ class ConditionalSubscription implements Subscription {
     @Override
     public void unsubscribe() {
         condition.removeListener(conditionListener);
-        if(subscription != null) {
+        if (subscription != null) {
             subscription.unsubscribe();
             subscription = null;
         }

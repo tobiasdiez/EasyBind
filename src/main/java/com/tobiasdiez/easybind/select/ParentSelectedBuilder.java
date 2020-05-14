@@ -1,7 +1,6 @@
 package com.tobiasdiez.easybind.select;
 
 import java.util.function.Function;
-
 import javafx.beans.value.ObservableValue;
 
 import com.tobiasdiez.easybind.EasyBinding;

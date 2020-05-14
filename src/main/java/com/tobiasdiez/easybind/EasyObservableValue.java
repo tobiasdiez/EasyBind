@@ -2,7 +2,6 @@ package com.tobiasdiez.easybind;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;

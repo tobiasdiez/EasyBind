@@ -12,20 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class SelectTest {
 
-    private static class A {
-        public final Property<B> b = new SimpleObjectProperty<>();
-    }
-
-    private static class B {
-        public final Property<String> s = new SimpleStringProperty();
-    }
-
     @Test
     public void test() {
         Property<A> root = new SimpleObjectProperty<>();
-        Binding<String> selection = EasyBind.select(root)
-                .select(a -> a.b)
-                .selectObject(b -> b.s);
+        Binding<String> selection = EasyBind.select(root).select(a -> a.b).selectObject(b -> b.s);
         Counter counter = new Counter();
         selection.addListener(obs -> counter.inc());
 
@@ -85,6 +75,14 @@ public class SelectTest {
 
         // test that a second call to dispose does not throw
         selection.dispose();
+    }
+
+    private static class A {
+        public final Property<B> b = new SimpleObjectProperty<>();
+    }
+
+    private static class B {
+        public final Property<String> s = new SimpleStringProperty();
     }
 
 }

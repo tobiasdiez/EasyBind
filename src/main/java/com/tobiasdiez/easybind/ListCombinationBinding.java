@@ -2,7 +2,6 @@ package com.tobiasdiez.easybind;
 
 import java.util.function.Function;
 import java.util.stream.Stream;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
 import javafx.beans.binding.ObjectBinding;
@@ -14,18 +13,14 @@ import javafx.collections.WeakListChangeListener;
 
 class ListCombinationBinding<T, U> extends ObjectBinding<U> implements EasyBinding<U> {
 
-    private final ListChangeListener<ObservableValue<? extends T>> listListener = ch -> sourceChanged(ch);
     private final InvalidationListener elemListener = obs -> elementInvalidated();
-
-    private final WeakListChangeListener<ObservableValue<? extends T>> weakListListener = new WeakListChangeListener<>(listListener);
     private final WeakInvalidationListener weakElemListener = new WeakInvalidationListener(elemListener);
-
+    private final ListChangeListener<ObservableValue<? extends T>> listListener = ch -> sourceChanged(ch);
+    private final WeakListChangeListener<ObservableValue<? extends T>> weakListListener = new WeakListChangeListener<>(listListener);
     private final ObservableList<? extends ObservableValue<? extends T>> source;
     private final Function<? super Stream<T>, ? extends U> combiner;
 
-    public ListCombinationBinding(
-            ObservableList<? extends ObservableValue<? extends T>> list,
-            Function<? super Stream<T>, ? extends U> f) {
+    public ListCombinationBinding(ObservableList<? extends ObservableValue<? extends T>> list, Function<? super Stream<T>, ? extends U> f) {
         source = list;
         combiner = f;
 
@@ -44,9 +39,8 @@ class ListCombinationBinding<T, U> extends ObjectBinding<U> implements EasyBindi
         source.removeListener(weakListListener);
     }
 
-    private void sourceChanged(
-            Change<? extends ObservableValue<? extends T>> ch) {
-        while(ch.next()) {
+    private void sourceChanged(Change<? extends ObservableValue<? extends T>> ch) {
+        while (ch.next()) {
             ch.getRemoved().forEach(elem -> elem.removeListener(weakElemListener));
             ch.getAddedSubList().forEach(elem -> elem.addListener(weakElemListener));
             invalidate();

@@ -1,7 +1,6 @@
 package com.tobiasdiez.easybind;
 
 import java.util.Arrays;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;

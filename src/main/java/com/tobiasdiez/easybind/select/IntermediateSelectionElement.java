@@ -1,22 +1,17 @@
 package com.tobiasdiez.easybind.select;
 
 import java.util.function.Function;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 
 class IntermediateSelectionElement<T, U, V> implements NestedSelectionElement<T, V> {
-    private final InvalidationListener observableInvalidationListener = obs -> observableInvalidated();
     private final Function<? super T, ObservableValue<U>> selector;
     private final NestedSelectionElement<U, V> nested;
     private final Runnable onInvalidation;
-
+    private final InvalidationListener observableInvalidationListener = obs -> observableInvalidated();
     private ObservableValue<U> observable = null;
 
-    public IntermediateSelectionElement(
-            Runnable onInvalidation,
-            Function<? super T, ObservableValue<U>> selector,
-            NestedSelectionElementFactory<U, V> nestedSelectionFactory) {
+    public IntermediateSelectionElement(Runnable onInvalidation, Function<? super T, ObservableValue<U>> selector, NestedSelectionElementFactory<U, V> nestedSelectionFactory) {
         this.onInvalidation = onInvalidation;
         this.selector = selector;
         this.nested = nestedSelectionFactory.create(this::nestedInvalidated);
@@ -24,7 +19,7 @@ class IntermediateSelectionElement<T, U, V> implements NestedSelectionElement<T,
 
     @Override
     public void connect(T baseVal) {
-        if(isConnected()) {
+        if (isConnected()) {
             throw new IllegalStateException("Already connected");
         }
 
@@ -34,7 +29,7 @@ class IntermediateSelectionElement<T, U, V> implements NestedSelectionElement<T,
 
     @Override
     public void disconnect() {
-        if(isConnected()) {
+        if (isConnected()) {
             nested.disconnect();
             observable.removeListener(observableInvalidationListener);
             observable = null;
@@ -48,13 +43,13 @@ class IntermediateSelectionElement<T, U, V> implements NestedSelectionElement<T,
 
     @Override
     public V getValue() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new IllegalStateException("Not connected");
         }
 
-        if(!nested.isConnected()) {
+        if (!nested.isConnected()) {
             U observableVal = observable.getValue();
-            if(observableVal == null) {
+            if (observableVal == null) {
                 return null;
             }
             nested.connect(observableVal);

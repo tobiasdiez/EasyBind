@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
@@ -153,8 +152,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      * @see EasyBind#listen(ObservableValue, ChangeListener)
      */
     default Subscription listenToValues(SimpleChangeListener<? super T> listener) {
-        ChangeListener<Optional<T>> listenerOpt = (observable, oldValue, newValue) ->
-                newValue.ifPresent(newVal -> listener.changed(oldValue.orElse(null), newVal));
+        ChangeListener<Optional<T>> listenerOpt = (observable, oldValue, newValue) -> newValue.ifPresent(newVal -> listener.changed(oldValue.orElse(null), newVal));
         return listen(listenerOpt);
     }
 

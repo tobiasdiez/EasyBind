@@ -1,7 +1,6 @@
 package com.tobiasdiez.easybind;
 
 import java.util.function.Function;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
 import javafx.beans.binding.Bindings;
@@ -14,16 +13,13 @@ import com.tobiasdiez.easybind.optional.PropertyBinding;
 abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>> extends ObjectBinding<U> implements EasyBinding<U> {
     private final ObservableValue<T> src;
     private final Function<? super T, O> mapper;
-
+    private final InvalidationListener mappedListener = obs -> mappedInvalidated();
+    private final InvalidationListener weakMappedListener = new WeakInvalidationListener(mappedListener);
     // need to retain strong reference to listeners, so that they don't get garbage collected
     private final InvalidationListener srcListener = obs -> srcInvalidated();
-    private final InvalidationListener mappedListener = obs -> mappedInvalidated();
-
-    private final InvalidationListener weakSrcListener = new WeakInvalidationListener(srcListener);
-    private final InvalidationListener weakMappedListener = new WeakInvalidationListener(mappedListener);
-
     private O mapped = null;
     private Subscription mappedSubscription = null;
+    private final InvalidationListener weakSrcListener = new WeakInvalidationListener(srcListener);
 
     public FlatMapBindingBase(ObservableValue<T> src, Function<? super T, O> f) {
         this.src = src;
@@ -44,9 +40,9 @@ abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>> extends Ob
     }
 
     private void setupTargetObservable() {
-        if(mapped == null) {
+        if (mapped == null) {
             T baseVal = src.getValue();
-            if(baseVal != null) {
+            if (baseVal != null) {
                 mapped = mapper.apply(baseVal);
                 mappedSubscription = observeTargetObservable(mapped);
             }
@@ -64,7 +60,7 @@ abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>> extends Ob
     }
 
     private void disposeMapped() {
-        if(mapped != null) {
+        if (mapped != null) {
             mappedSubscription.unsubscribe();
             mappedSubscription = null;
             mapped = null;
@@ -99,15 +95,15 @@ class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T,
 
     @Override
     protected Subscription observeTargetObservable(O mapped) {
-        if(boundTo != null) {
+        if (boundTo != null) {
             mapped.bind(boundTo);
         }
 
         Subscription s1 = super.observeTargetObservable(mapped);
         Subscription s2 = () -> {
-            if(boundTo != null) {
+            if (boundTo != null) {
                 mapped.unbind();
-                if(resetOnUnbind) {
+                if (resetOnUnbind) {
                     mapped.setValue(resetTo);
                 }
             }
@@ -121,7 +117,7 @@ class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T,
         super.srcInvalidated();
 
         // if bound, make sure to rebind eagerly
-        if(boundTo != null) {
+        if (boundTo != null) {
             getTargetObservable();
         }
     }
@@ -129,7 +125,7 @@ class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T,
     @Override
     public void setValue(U value) {
         Property<U> target = getTargetObservable();
-        if(target != null) {
+        if (target != null) {
             target.setValue(value);
         }
     }
@@ -137,7 +133,7 @@ class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T,
     @Override
     public void bind(ObservableValue<? extends U> other) {
         Property<U> target = getTargetObservable();
-        if(target != null) {
+        if (target != null) {
             target.bind(other);
         }
         boundTo = other;
@@ -148,7 +144,7 @@ class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T,
     @Override
     public void bind(ObservableValue<? extends U> other, U resetToOnUnbind) {
         Property<U> target = getTargetObservable();
-        if(target != null) {
+        if (target != null) {
             target.bind(other);
         }
         boundTo = other;
@@ -158,14 +154,13 @@ class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T,
 
     @Override
     public boolean isBound() {
-        return boundTo != null ||
-                (getTargetObservable() != null && getTargetObservable().isBound());
+        return boundTo != null || (getTargetObservable() != null && getTargetObservable().isBound());
     }
 
     @Override
     public void unbind() {
         Property<U> target = getTargetObservable();
-        if(target != null) {
+        if (target != null) {
             target.unbind();
         }
         boundTo = null;

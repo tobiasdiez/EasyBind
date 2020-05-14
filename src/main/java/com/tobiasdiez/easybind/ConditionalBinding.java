@@ -1,7 +1,6 @@
 package com.tobiasdiez.easybind;
 
 import java.lang.ref.WeakReference;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.Property;
@@ -9,8 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 @Deprecated
-class ConditionalBinding<T> implements Subscription, InvalidationListener,
-        ChangeListener<Boolean> {
+class ConditionalBinding<T> implements Subscription, InvalidationListener, ChangeListener<Boolean> {
 
     private final WeakReference<Property<T>> target;
     private final ObservableValue<? extends T> source;
@@ -18,10 +16,7 @@ class ConditionalBinding<T> implements Subscription, InvalidationListener,
 
     private boolean unsubscribed = false;
 
-    public ConditionalBinding(
-            Property<T> target,
-            ObservableValue<? extends T> source,
-            ObservableValue<Boolean> condition) {
+    public ConditionalBinding(Property<T> target, ObservableValue<? extends T> source, ObservableValue<Boolean> condition) {
         this.target = new WeakReference<>(target);
         this.source = source;
         this.condition = condition;
@@ -32,18 +27,17 @@ class ConditionalBinding<T> implements Subscription, InvalidationListener,
 
         condition.addListener((ChangeListener<Boolean>) this);
 
-        if(condition.getValue()) {
+        if (condition.getValue()) {
             target.bind(source);
         }
     }
 
     @Override
-    public void changed(ObservableValue<? extends Boolean> cond,
-            Boolean wasTrue, Boolean isTrue) {
+    public void changed(ObservableValue<? extends Boolean> cond, Boolean wasTrue, Boolean isTrue) {
         Property<T> tgt = this.target.get();
-        if(tgt == null) {
+        if (tgt == null) {
             condition.removeListener((ChangeListener<Boolean>) this);
-        } else if(isTrue) {
+        } else if (isTrue) {
             tgt.bind(source);
         } else {
             tgt.unbind();
@@ -57,11 +51,11 @@ class ConditionalBinding<T> implements Subscription, InvalidationListener,
 
     @Override
     public void unsubscribe() {
-        if(!unsubscribed) {
+        if (!unsubscribed) {
             condition.removeListener((ChangeListener<Boolean>) this);
 
             Property<T> tgt = this.target.get();
-            if(tgt != null) {
+            if (tgt != null) {
                 tgt.removeListener(this);
                 tgt.unbind();
             }

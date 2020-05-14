@@ -2,12 +2,15 @@ package com.tobiasdiez.easybind;
 
 class Counter {
     private int count = 0;
+
     public void inc() {
         count += 1;
     }
+
     public int get() {
         return count;
     }
+
     public void reset() {
         count = 0;
     }

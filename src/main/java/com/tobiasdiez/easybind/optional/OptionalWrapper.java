@@ -1,7 +1,6 @@
 package com.tobiasdiez.easybind.optional;
 
 import java.util.Optional;
-
 import javafx.beans.value.ObservableValue;
 
 import com.tobiasdiez.easybind.EasyBind;
