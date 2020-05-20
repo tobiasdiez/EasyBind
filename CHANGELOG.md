@@ -6,13 +6,14 @@ All notable changes to this project will be documented in this file.
 - Added new interface `EasyObservableList` which is a wrapper around a standard `ObservableList` providing access to a few convenient helper methods. Use `EasyBind.wrapList` to create such a wrapper around a given `ObservableList`.
 - Added new method `EasyBind.reduce(list, accumulation)` that creates a binding holding the result of the accumulation function on the provided list.
 - Added a few new methods `EasyBind.valueAt` that are essentially equivalent to the standard `Bindings.valueAt` methods except that they gracefully handle non-existing values by returning a `OptionalBinding`.
+- Completely reworked bindings for optional values: 
+  - New methods in `ObervableOptionalValue` having `Value` in the name provide convenient access to the corresponding method of an optional. For example, `getValueOrElse` and `isValuePresent` are analogs of `Optional.getOrElse` and `Optional.isPresent`.
+  - New methods that create bindings whose value is computed similar to the corresponding methods in `Optional`, e.g. `isPresent`, `isEmpty`, `orElse`, `flatMap`.
 
 ### Changed
 - Renamed package to `com.tobiasdiez.easybind`.
 - Split `MonadicBinding` into a part which is really concerned with optionals (new `ObervableOptionalValue`) and one which provides helper methods for a fluent interface for normal bindings (new `EasyBinding`).
 - Renamed `flatMap` to `mapObservable` to avoid clashes with the corresponding method in `Optional`.
-- Completely reworked bindings for optional values: 
-  - New methods in `ObervableOptionalValue` having `Value` in the name provide convenient access to the corresponding method of an optional. For example, `getValueOrElse` and `isValuePresent` are analogs of `Optional.getOrElse` and `Optional.isPresent`.
 - Renamed subscribe methods that accept listeners to `listen`, which invoke the given listener every time the value changes. In contrast, the `subscribe` method also invokes the given subscriber upon registration. 
 
 ### Removed

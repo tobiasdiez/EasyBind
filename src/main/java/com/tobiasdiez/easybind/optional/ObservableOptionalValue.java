@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
@@ -105,6 +106,19 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      */
     <U> OptionalBinding<U> map(Function<? super T, ? extends U> mapper);
 
+
+    /**
+     * Returns a new observable that holds the result of applying the given function to the value as this observable, if present, otherwise empty.
+     *
+     * <p>This method is similar to {@link #map(Function)}, but the mapping
+     * function is one whose result is already an {@code Optional}, and if
+     * invoked, {@code flatMap} does not wrap it within an additional
+     * {@code Optional}.
+     *
+     * @param mapper the mapping to apply to a value, if present
+     */
+    <U> OptionalBinding<U> flatMap(Function<T, Optional<U>> mapper);
+
     /**
      * Returns a new observable that holds the value of the observable resulting from applying the given function to the value as this observable.
      * If this observable is empty or the function returns {@code null}, then this is converted to an empty optional.
@@ -144,6 +158,16 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
         };
         return EasyBind.selectProperty(this, mapperOpt);
     }
+
+    /**
+     * Returns a new observable that holds {@code true} if this observable holds value, or {@code false} otherwise.
+     */
+    BooleanBinding isPresent();
+
+    /**
+     * Returns a new observable that holds {@code true} if this observable does not hold value, or {@code false} otherwise.
+     */
+    BooleanBinding isEmpty();
 
     /**
      * Adds a change listener and returns a {@link Subscription} that can be used to remove that listener.

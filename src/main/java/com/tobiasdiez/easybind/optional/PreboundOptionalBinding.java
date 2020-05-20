@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ObservableValue;
 
 import com.tobiasdiez.easybind.EasyBinding;
@@ -37,6 +39,18 @@ public abstract class PreboundOptionalBinding<T> extends PreboundBinding<Optiona
     }
 
     @Override
+    public <U> OptionalBinding<U> flatMap(Function<T, Optional<U>> mapper) {
+        // TODO: The method should actually accept Function<? super T, ? extends Optional<? extends U>> mapper but this currently leads to compiler errors (with Java 8?)
+        return new PreboundOptionalBinding<U>(dependencies) {
+
+            @Override
+            protected Optional<U> computeValue() {
+                return PreboundOptionalBinding.this.getValue().flatMap(mapper);
+            }
+        };
+    }
+
+    @Override
     public EasyBinding<T> orElse(T other) {
         return new EasyPreboundBinding<T>(dependencies) {
             @Override
@@ -57,8 +71,18 @@ public abstract class PreboundOptionalBinding<T> extends PreboundBinding<Optiona
         return new PreboundOptionalBinding<T>(dependencies) {
             @Override
             protected Optional<T> computeValue() {
-                return this.getValue().filter(predicate);
+                return PreboundOptionalBinding.this.getValue().filter(predicate);
             }
         };
+    }
+
+    @Override
+    public BooleanBinding isPresent() {
+        return Bindings.createBooleanBinding(() -> PreboundOptionalBinding.this.getValue().isPresent(), dependencies);
+    }
+
+    @Override
+    public BooleanBinding isEmpty() {
+        return Bindings.createBooleanBinding(() -> !PreboundOptionalBinding.this.getValue().isPresent(), dependencies);
     }
 }
