@@ -1,9 +1,12 @@
 package com.tobiasdiez.easybind;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -14,9 +17,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import com.tobiasdiez.easybind.optional.ObservableOptionalValue;
+import com.tobiasdiez.easybind.optional.OptionalBinding;
 import com.tobiasdiez.easybind.optional.OptionalWrapper;
+import com.tobiasdiez.easybind.optional.PreboundOptionalBinding;
 import com.tobiasdiez.easybind.optional.PropertyBinding;
 import com.tobiasdiez.easybind.select.SelectBuilder;
 
@@ -26,7 +32,7 @@ import com.tobiasdiez.easybind.select.SelectBuilder;
 public class EasyBind {
 
     /**
-     * Creates a wrapper around the given observable to provide convenient helper methods (for fluent style)
+     * Creates a wrapper around the given observable to provide access to convenient helper methods (for fluent style)
      *
      * @param value the observable to wrap
      * @return a thin wrapper around the given observable
@@ -73,6 +79,158 @@ public class EasyBind {
      */
     public static <T> ObservableOptionalValue<T> wrapNullable(ObservableValue<T> value) {
         return new OptionalWrapper<>(value);
+    }
+
+    /**
+     * Creates a wrapper around the given observable list to provide access to convenient helper methods (for fluent style)
+     *
+     * @param list the observable list to wrap
+     * @return a thin wrapper around the given observable list
+     */
+    public static <E> EasyObservableList<E> wrapList(ObservableList<E> list) {
+        return new EasyObservableList<E>() {
+            public int size() {
+                return list.size();
+            }
+
+            public boolean isEmpty() {
+                return list.isEmpty();
+            }
+
+            public boolean contains(Object o) {
+                return list.contains(o);
+            }
+
+            public Iterator<E> iterator() {
+                return list.iterator();
+            }
+
+            public Object[] toArray() {
+                return list.toArray();
+            }
+
+            public <T> T[] toArray(T[] a) {
+                return list.toArray(a);
+            }
+
+            public boolean add(E e) {
+                return list.add(e);
+            }
+
+            public boolean remove(Object o) {
+                return list.remove(o);
+            }
+
+            public boolean containsAll(Collection<?> c) {
+                return list.containsAll(c);
+            }
+
+            public boolean addAll(Collection<? extends E> c) {
+                return list.addAll(c);
+            }
+
+            public boolean addAll(int index, Collection<? extends E> c) {
+                return list.addAll(index, c);
+            }
+
+            public boolean removeAll(Collection<?> c) {
+                return list.removeAll(c);
+            }
+
+            public boolean retainAll(Collection<?> c) {
+                return list.retainAll(c);
+            }
+
+            public void clear() {
+                list.clear();
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return list.equals(o);
+            }
+
+            @Override
+            public int hashCode() {
+                return list.hashCode();
+            }
+
+            public E get(int index) {
+                return list.get(index);
+            }
+
+            public E set(int index, E element) {
+                return list.set(index, element);
+            }
+
+            public void add(int index, E element) {
+                list.add(index, element);
+            }
+
+            public E remove(int index) {
+                return list.remove(index);
+            }
+
+            public int indexOf(Object o) {
+                return list.indexOf(o);
+            }
+
+            public int lastIndexOf(Object o) {
+                return list.lastIndexOf(o);
+            }
+
+            public ListIterator<E> listIterator() {
+                return list.listIterator();
+            }
+
+            public ListIterator<E> listIterator(int index) {
+                return list.listIterator(index);
+            }
+
+            public List<E> subList(int fromIndex, int toIndex) {
+                return list.subList(fromIndex, toIndex);
+            }
+
+            public void addListener(InvalidationListener listener) {
+                list.addListener(listener);
+            }
+
+            public void removeListener(InvalidationListener listener) {
+                list.removeListener(listener);
+            }
+
+            public void addListener(ListChangeListener<? super E> listener) {
+                list.addListener(listener);
+            }
+
+            public void removeListener(ListChangeListener<? super E> listener) {
+                list.removeListener(listener);
+            }
+
+            public boolean addAll(E... elements) {
+                return list.addAll(elements);
+            }
+
+            public boolean setAll(E... elements) {
+                return list.setAll(elements);
+            }
+
+            public boolean setAll(Collection<? extends E> col) {
+                return list.setAll(col);
+            }
+
+            public boolean removeAll(E... elements) {
+                return list.removeAll(elements);
+            }
+
+            public boolean retainAll(E... elements) {
+                return list.retainAll(elements);
+            }
+
+            public void remove(int from, int to) {
+                list.remove(from, to);
+            }
+        };
     }
 
     /**
@@ -127,7 +285,7 @@ public class EasyBind {
         return new FlatMapProperty<>(source, mapper);
     }
 
-    public static <T, U> ObservableList<U> map(ObservableList<? extends T> sourceList, Function<? super T, ? extends U> f) {
+    public static <T, U> EasyObservableList<U> map(ObservableList<? extends T> sourceList, Function<? super T, ? extends U> f) {
         return new MappedList<>(sourceList, f);
     }
 
@@ -148,7 +306,7 @@ public class EasyBind {
      * the items are converted when the are inserted instead of when they are accessed.
      * Thus the initial CPU overhead and memory consumption is higher but the access to list items is quicker.
      */
-    public static <A, B> ObservableList<B> mapBacked(ObservableList<A> source, Function<A, B> mapper) {
+    public static <A, B> EasyObservableList<B> mapBacked(ObservableList<A> source, Function<A, B> mapper) {
         return new MappedBackedList<>(source, mapper);
     }
 
@@ -199,6 +357,26 @@ public class EasyBind {
 
     public static <T, R> EasyBinding<R> combine(ObservableList<? extends ObservableValue<? extends T>> list, Function<? super Stream<T>, ? extends R> f) {
         return new ListCombinationBinding<>(list, f);
+    }
+
+
+    /**
+     * Creates a new binding that performs a reduction on the
+     * elements of this list, using the provided accumulation function.
+     *
+     * @param list        the source list
+     * @param accumulator the accumulation function to apply
+     * @see Stream#reduce(Object, BinaryOperator)
+     * @see Stream#reduce(BinaryOperator)
+     * @see Stream#reduce(Object, BiFunction, BinaryOperator)
+     */
+    public static <T, R> EasyBinding<R> reduce(ObservableList<? extends T> list, Function<? super Stream<? extends T>, ? extends R> accumulator) {
+        return new EasyPreboundBinding<R>(list) {
+            @Override
+            protected R computeValue() {
+                return accumulator.apply(list.stream());
+            }
+        };
     }
 
     /**
@@ -340,6 +518,65 @@ public class EasyBind {
     public static <T> Subscription listen(ObservableValue<T> observable, ChangeListener<? super T> listener) {
         observable.addListener(listener);
         return () -> observable.removeListener(listener);
+    }
+
+    /**
+     * Creates a new {@link OptionalBinding} that contains the element
+     * of an {@link ObservableList} at the specified position.
+     * The binding will be empty if the {@code index} points behind the {@code ObservableList} or to a {@code null} element.
+     *
+     * @param list  the {@code ObservableList}
+     * @param index the position in the {@code List}
+     * @return the new {@code OptionalBinding}
+     * @throws NullPointerException     if the {@code ObservableList} is {@code null}
+     * @throws IllegalArgumentException if (@code index &lt; 0)
+     */
+    public static <E> OptionalBinding<E> valueAt(final ObservableList<E> list, final int index) {
+        if (list == null) {
+            throw new NullPointerException("List cannot be null.");
+        }
+        if (index < 0) {
+            throw new IllegalArgumentException("Index cannot be negative");
+        }
+
+        return new PreboundOptionalBinding<E>(list) {
+            @Override
+            protected Optional<E> computeValue() {
+                try {
+                    return Optional.ofNullable(list.get(index));
+                } catch (IndexOutOfBoundsException ex) {
+                    return Optional.empty();
+                }
+            }
+        };
+    }
+
+
+    /**
+     * Creates a new {@link OptionalBinding} that contains the mapping of a specific key
+     * in an {@link ObservableMap}.
+     * The binding will be empty if the {@code key} is not contained in the map or points to a {@code null} element.
+     *
+     * @param map the {@code ObservableMap}
+     * @param key the key in the {@code Map}
+     * @return the new {@code ObjectBinding}
+     * @throws NullPointerException if the {@code ObservableMap} is {@code null}
+     */
+    public static <K, V> OptionalBinding<V> valueAt(final ObservableMap<K, V> map, final K key) {
+        if (map == null) {
+            throw new NullPointerException("Map cannot be null.");
+        }
+
+        return new PreboundOptionalBinding<V>(map) {
+            @Override
+            protected Optional<V> computeValue() {
+                try {
+                    return Optional.ofNullable(map.get(key));
+                } catch (ClassCastException | NullPointerException ex) {
+                    return Optional.empty();
+                }
+            }
+        };
     }
 
     @FunctionalInterface

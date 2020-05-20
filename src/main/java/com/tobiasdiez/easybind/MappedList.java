@@ -7,7 +7,7 @@ import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.TransformationList;
 
-class MappedList<E, F> extends TransformationList<E, F> {
+class MappedList<E, F> extends TransformationList<E, F> implements EasyObservableList<E> {
 
     private final Function<? super F, ? extends E> mapper;
 

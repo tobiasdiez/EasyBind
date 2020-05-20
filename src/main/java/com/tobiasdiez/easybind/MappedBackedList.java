@@ -7,20 +7,20 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.TransformationList;
 
-class MappedBackedList<A, B> extends TransformationList<A, B> {
+class MappedBackedList<E, F> extends TransformationList<E, F> implements EasyObservableList<E> {
 
-    private final Function<B, A> mapper;
-    private final List<A> backingList;
+    private final Function<F, E> mapper;
+    private final List<E> backingList;
 
-    public MappedBackedList(ObservableList<? extends B> sourceList, Function<B, A> mapper) {
+    public MappedBackedList(ObservableList<? extends F> sourceList, Function<F, E> mapper) {
         super(sourceList);
         this.mapper = mapper;
         this.backingList = new ArrayList<>(sourceList.size());
-        sourceList.stream().map(mapper::apply).forEach(backingList::add);
+        sourceList.stream().map(mapper).forEach(backingList::add);
     }
 
     @Override
-    protected void sourceChanged(ListChangeListener.Change<? extends B> change) {
+    protected void sourceChanged(ListChangeListener.Change<? extends F> change) {
         beginChange();
         while (change.next()) {
             if (change.wasPermutated()) {
@@ -41,7 +41,7 @@ class MappedBackedList<A, B> extends TransformationList<A, B> {
 
                 // update backingList
                 for (int i = 0; i < to; i++) {
-                    backingList.set(i + from, (A) permutedPart[i]);
+                    backingList.set(i + from, (E) permutedPart[i]);
                 }
                 nextPermutation(from, to, permutation);
             } else if (change.wasUpdated()) {
@@ -50,7 +50,7 @@ class MappedBackedList<A, B> extends TransformationList<A, B> {
             } else {
                 if (change.wasRemoved()) {
                     int removePosition = change.getFrom();
-                    List<A> removed = new ArrayList<>(change.getRemovedSize());
+                    List<E> removed = new ArrayList<>(change.getRemovedSize());
                     for (int i = 0; i < change.getRemovedSize(); i++) {
                         removed.add(backingList.remove(removePosition));
                     }
@@ -80,7 +80,7 @@ class MappedBackedList<A, B> extends TransformationList<A, B> {
     }
 
     @Override
-    public A get(int index) {
+    public E get(int index) {
         return backingList.get(index);
     }
 

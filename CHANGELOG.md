@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+- Added new interface `EasyObservableList` which is a wrapper around a standard `ObservableList` providing access to a few convenient helper methods. Use `EasyBind.wrapList` to create such a wrapper around a given `ObservableList`.
+- Added new method `EasyBind.reduce(list, accumulation)` that creates a binding holding the result of the accumulation function on the provided list.
+- Added a few new methods `EasyBind.valueAt` that are essentially equivalent to the standard `Bindings.valueAt` methods except that they gracefully handle non-existing values by returning a `OptionalBinding`.
+
 ### Changed
 - Renamed package to `com.tobiasdiez.easybind`.
 - Split `MonadicBinding` into a part which is really concerned with optionals (new `ObervableOptionalValue`) and one which provides helper methods for a fluent interface for normal bindings (new `EasyBinding`).
