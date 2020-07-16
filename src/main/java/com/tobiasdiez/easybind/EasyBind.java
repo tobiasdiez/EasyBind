@@ -256,6 +256,9 @@ public class EasyBind {
     /**
      * Returns an observable that, when the given observable value holds value {@code x}, holds the value held by the observable {@code f(x)}.
      *
+     * <p> Note that the {@code mapper} is also invoked if {@code x} is {@code null}.
+     * A better {@code null}-handling is possible with {@link ObservableOptionalValue#mapObservable(Function)} )}.
+     *
      * @param source the original observable value serving as input
      * @param mapper the function to apply, returning an observable value
      * @see #map(ObservableValue, Function)
@@ -267,17 +270,20 @@ public class EasyBind {
     /**
      * Similar to {@link #mapObservable(ObservableValue, Function)}, except the returned binding is
      * also a property. This means you can call {@code setValue()} and
-     * {@code bind()} methods on the returned value, which delegates to the
-     * currently selected Property.
+     * {@code bind()} methods on the returned property, which delegates to the
+     * currently selected property.
      * <p>
-     * As the value of this ObservableValue changes, so does the selected
-     * Property. When the Property returned from this method is bound, as the
-     * selected Property changes, the previously selected property is unbound
+     * As the value of the {@code source} changes, so does the currently selected
+     * property. When the property returned from this method is bound, as the
+     * selected property changes, the previously selected property is unbound
      * and the newly selected property is bound.
      *
      * <p>Note that if the currently selected property is {@code null}, then
      * calling {@code getValue()} on the returned value will return {@code null}
      * regardless of any prior call to {@code setValue()} or {@code bind()}.
+     *
+     * <p> Note that the {@code mapper} is also invoked if {@code source} holds a {@code null} value.
+     * A better {@code null}-handling is possible with {@link ObservableOptionalValue#selectProperty(Function)} )}.
      *
      * <p>Note that you need to retain a reference to the returned value to
      * prevent it from being garbage collected.

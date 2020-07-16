@@ -10,26 +10,31 @@ import javafx.beans.value.ObservableValue;
 
 import com.tobiasdiez.easybind.optional.PropertyBinding;
 
+/**
+ * Converts an observable holding a value of type {@code T} to an observable holding a value of type {@code U},
+ * using a {@code mapper} function that extracts an {@code ObservableValue<U>} from the source object.
+ * The value hold by this class is the value hold by the extracted observable.
+ */
 abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>> extends ObjectBinding<U> implements EasyBinding<U> {
-    private final ObservableValue<T> src;
+    private final ObservableValue<T> source;
     private final Function<? super T, O> mapper;
+    // need to retain strong reference to listeners, so that they don't get garbage collected
+    private final InvalidationListener sourceListener = obs -> sourceInvalidated();
+    private final InvalidationListener weakSourceListener = new WeakInvalidationListener(sourceListener);
     private final InvalidationListener mappedListener = obs -> mappedInvalidated();
     private final InvalidationListener weakMappedListener = new WeakInvalidationListener(mappedListener);
-    // need to retain strong reference to listeners, so that they don't get garbage collected
-    private final InvalidationListener srcListener = obs -> srcInvalidated();
     private O mapped = null;
     private Subscription mappedSubscription = null;
-    private final InvalidationListener weakSrcListener = new WeakInvalidationListener(srcListener);
 
-    public FlatMapBindingBase(ObservableValue<T> src, Function<? super T, O> f) {
-        this.src = src;
-        this.mapper = f;
-        src.addListener(weakSrcListener);
+    public FlatMapBindingBase(ObservableValue<T> source, Function<? super T, O> mapper) {
+        this.source = source;
+        this.mapper = mapper;
+        source.addListener(weakSourceListener);
     }
 
     @Override
     public final void dispose() {
-        src.removeListener(weakSrcListener);
+        source.removeListener(weakSourceListener);
         disposeMapped();
     }
 
@@ -41,11 +46,9 @@ abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>> extends Ob
 
     private void setupTargetObservable() {
         if (mapped == null) {
-            T baseVal = src.getValue();
-            if (baseVal != null) {
-                mapped = mapper.apply(baseVal);
-                mappedSubscription = observeTargetObservable(mapped);
-            }
+            T baseVal = source.getValue();
+            mapped = mapper.apply(baseVal);
+            mappedSubscription = observeTargetObservable(mapped);
         }
     }
 
@@ -71,7 +74,7 @@ abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>> extends Ob
         invalidate();
     }
 
-    protected void srcInvalidated() {
+    protected void sourceInvalidated() {
         disposeMapped();
         invalidate();
     }
@@ -79,8 +82,8 @@ abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>> extends Ob
 
 class FlatMapBinding<T, U, O extends ObservableValue<U>> extends FlatMapBindingBase<T, U, O> {
 
-    public FlatMapBinding(ObservableValue<T> src, Function<? super T, O> f) {
-        super(src, f);
+    public FlatMapBinding(ObservableValue<T> source, Function<? super T, O> mapper) {
+        super(source, mapper);
     }
 }
 
@@ -89,8 +92,8 @@ class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T,
     private boolean resetOnUnbind = false;
     private U resetTo = null;
 
-    public FlatMapProperty(ObservableValue<T> src, Function<? super T, O> f) {
-        super(src, f);
+    public FlatMapProperty(ObservableValue<T> source, Function<? super T, O> mapper) {
+        super(source, mapper);
     }
 
     @Override
@@ -113,8 +116,8 @@ class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T,
     }
 
     @Override
-    protected void srcInvalidated() {
-        super.srcInvalidated();
+    protected void sourceInvalidated() {
+        super.sourceInvalidated();
 
         // if bound, make sure to rebind eagerly
         if (boundTo != null) {
