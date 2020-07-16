@@ -79,7 +79,7 @@ public interface EasyObservableList<E> extends ObservableList<E> {
     /**
      * @see EasyBind#reduce(ObservableList, Function)
      */
-    default <R> EasyBinding<R> ag(Function<? super Stream<? extends E>, ? extends R> accumulator) {
+    default <R> EasyBinding<R> reduce(Function<? super Stream<? extends E>, ? extends R> accumulator) {
         return EasyBind.reduce(this, accumulator);
     }
 }
