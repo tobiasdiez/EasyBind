@@ -463,6 +463,7 @@ public class EasyBind {
      * {@code condition} and manipulating {@code collection}.
      */
     public static <T> Subscription includeWhen(Collection<T> collection, T element, ObservableValue<Boolean> condition) {
+        // TODO: Move this to the When class: `when(condition).thenInclude(element, collection)`
         return subscribe(condition, new Consumer<Boolean>() {
             private boolean included = false;
 

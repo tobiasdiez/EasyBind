@@ -1,93 +1,87 @@
-EasyBind
-========
+# EasyBind
 
-EasyBind leverages lambdas to reduce boilerplate when creating custom bindings, provides a type-safe alternative to `Bindings.select*` methods (inspired by Anton Nashatyrev's [feature request](https://javafx-jira.kenai.com/browse/RT-35923), planned for JavaFX 9) and adds _monadic_ operations to `ObservableValue`.
+EasyBind leverages lambdas to reduce boilerplate when creating custom bindings, provides a type-safe alternative to `Bindings.select*` methods and adds provides enhanced bindings support for `Optional`.
 
+See below for [how to install EasyBind in your project](#use-easybind-in-your-project).
 
-Static methods
---------------
+This is a maintained fork of the [EasyBind library by Tomas Mikula](https://github.com/TomasMikula/EasyBind), which sadly is dormant at the moment.
 
-### map
+## Getting started
+
+The simplest way is to use the `EasyBind.wrap*` methods to create wrappers around standard JavaFX observable values or lists.
+The wrapper then gives you access to all the features of EasyBind.
+For example,
+```java
+ObservableStringValue str = ...;
+Binding<Integer> length = EasyBind.wrap(str)
+                                  .map(String::length);
+```
+creates a `Binding` that holds the length of `str`.
+Similarly, 
+```java
+ObservableList<String> list = ...;
+Binding<Boolean> allMatch = EasyBind.wrap(list)
+                                    .allMatch(String:isEmpty) 
+```
+yields a `Binding` that reflects whether all items in the list are empty strings.
+In addition to the `wrap*` methods, EasyBind also provides direct shortcuts for common functionality.
+For example, the above binding could be more shortly written as `EasyBind.map(String::length)`.
+
+## Features
+### Map observables
 
 Creates a binding whose value is a mapping of some observable value.
 
 ```java
 ObservableStringValue str = ...;
-Binding<Integer> strLen = EasyBind.map(str, String::length);
+Binding<Integer> lenght = EasyBind.map(str, String::length);
 ```
 
-Compare to plain JavaFX:
+### Combine observables
 
-```java
-ObservableStringValue str = ...;
-IntegerBinding strLen = Bindings.createIntegerBinding(() -> str.get().length(), str);
-```
-
-The difference is subtle, but important: In the latter version, `str` is repeated twice &mdash; once in the function to compute binding's value and once as binding's dependency. This opens the possibility that a wrong dependency is specified by mistake.
-
-
-### combine
-
-Creates a binding whose value is a combination of two or more (currently up to six) observable values.
+Creates a binding whose value is a combination of two or more observable values.
 
 ```java
 ObservableStringValue str = ...;
 ObservableValue<Integer> start = ...;
 ObservableValue<Integer> end = ...;
-Binding<String> subStr = EasyBind.combine(str, start, end, String::substring);
+Binding<String> substring = EasyBind.combine(str, start, end, String::substring);
 ```
 
-Compare to plain JavaFX:
+### Select properties
 
+Type-safe alternative to `Bindings.select*` methods.
 ```java
-ObservableStringValue str = ...;
-ObservableIntegerValue start = ...;
-ObservableIntegerValue end = ...;
-StringBinding subStr = Bindings.createStringBinding(() -> str.get().substring(start.get(), end.get()), str, start, end);
+Binding<Boolean> showing = EasyBind.select(control.sceneProperty()) 
+                                   .select(scene -> scene.windowProperty()) 
+                                   .selectObject(window -> window.showingProperty());
 ```
+The resulting binding is updated whenever one of the properties in the selection graph changes.
 
-Same difference as before &mdash; in the latter version, `str`, `start` and `end` are repeated twice, once in the function to compute binding's value and once as binding's dependencies, which opens the possibility of specifying wrong set of dependencies. Plus, the latter is getting less readable.
+### Map items in a lists
 
-
-### select
-
-Type-safe alternative to `Bindings.select*` methods. The following example is borrowed from [RT-35923](https://javafx-jira.kenai.com/browse/RT-35923).
-
+Returns a mapped view of an `ObservableList`.
 ```java
-Binding<Boolean> bb = EasyBind.select(control.sceneProperty()) 
-        .select(s -> s.windowProperty()) 
-        .selectObject(w -> w.showingProperty());
+ObservableList<String> items = ...;
+ObservableList<Integer> lengths = EasyBind.map(items, String::getLength);
 ```
-
-Compare to plain JavaFX:
-
-```java
-BooleanBinding bb = Bindings.selectBoolean(control.sceneProperty(), "window", "isShowing");
-```
-
-The latter version is not type-safe, which means it may cause runtime errors.
-
-
-### map list
-
-Returns a mapped view of an ObservableList.
-
-```java
-ObservableList<String> tabIds = EasyBind.map(tabPane.getTabs(), Tab::getId);
-```
-
-In the above example, `tabIds` is updated as tabs are added and removed from `tabPane`.
+In the above example, `lenghts` is updated as elements are added and removed from `items`.
 By design, the elements of the new observable are calculated on the fly whenever they are needed (e.g. if `get` is called).
 Thus, this is prefect for light-weight operations.
-If the conversion is a cost-intensive operation or the elements of the list are often accessed, then using `mapBacked` is a better option.
+If the conversion is a cost-intensive operation or if the elements of the list are often accessed, then using `mapBacked` is a better option.
 Here the elements of the list are converted once and then stored in memory.
 
-An equivalent feature has been requested in [JDK-8091967](https://bugs.openjdk.java.net/browse/JDK-8091967) and is scheduled for a future JavaFX release.
+### Reduce observable lists
+Using `reduce` you can aggregate an observable list of items into a single observable value.
 
+```java
+ObservableList<String> items = ...;
+ObservableValue<Boolean> totalLength = EasyBind.reduce(items, stream -> stream.mapToInt(String::length).sum());
+``` 
 
-### combine list
+### Reduce observable lists of observables
 
-Turns an _observable list_ of _observable values_ into a single observable value. The resulting observable value is updated when elements are added or removed to or from the list, as well as when element values change.
+More advanced, the `combine` method turns an _observable list_ of _observable values_ into a single observable value. The resulting observable value is updated whenever elements are added or removed to or from the list, as well as when element values change.
 
 ```java
 Property<Integer> a = new SimpleObjectProperty<>(5);
@@ -116,15 +110,17 @@ assert sum.getValue() == 10;
 
 You don't usually have an observable list of _observable_ values, but you often have an observable list of something that _contains_ an observable value. In that case, use the above `map` methods to get an observable list of observable values, as in the example below.
 
-#### Example: Disable "Save All" button on no unsaved changes
-
-Assume a tab pane that contains a text editor in every tab. The set of open tabs (i.e. open files) is changing. Let's further assume we use a custom Tab subclass `EditorTab` that has a boolean `savedProperty()` that indicates whether changes in its editor have been saved.
+<details>
+<summary>
+Example: Disable "Save All" button on no unsaved changes
+</summary>
+Assume a tab pane that contains a text editor in every tab. The set of open tabs (i.e. open files) is changing. Let's further assume we use a custom `Tab` subclass `EditorTab` that has a boolean `savedProperty()` indicating whether changes in its editor have been saved.
 
 **Task:** Keep the _"Save All"_ button disabled when there are no unsaved changes in any of the editors.
 
 ```java
 ObservableList<ObservableValue<Boolean>> individualTabsSaved =
-        EasyBind.map(tabPane.getTabs(), t -> ((EditorTab) t).savedProperty());
+        EasyBind.map(tabPane.getTabs(), tab -> ((EditorTab) tab).savedProperty());
 
 ObservableValue<Boolean> allTabsSaved = EasyBind.combine(
         individualTabsSaved,
@@ -133,18 +129,24 @@ ObservableValue<Boolean> allTabsSaved = EasyBind.combine(
 Button saveAllButton = new Button(...);
 saveAllButton.disableProperty().bind(allTabsSaved);
 ```
+</details>
 
-### bind list
 
-Occasionally one needs to synchronize the contents of an (observable) list with another observable list. If that is your case, [`listBind`](http://www.fxmisc.org/easybind/javadoc/org/fxmisc/easybind/EasyBind.html#listBind-java.util.List-javafx.collections.ObservableList-) is your friend:
-
+### Concat lists (of observable lists)
+The `concat` method combines two or more observable lists into one big list containing all items.
 ```java
-ObservableList<T> sourceList = ...;
-List<T> targetList = ...;
-EasyBind.listBind(targetList, sourceList);
+ObservableList<String> listA = ...;
+ObservableList<String> listB = ...;
+ObservableList<String> combinedList = EasyBind.concat(listA, listB);
 ```
 
-### subscribe to values
+Similarly, an observable list of observable lists can be combined into one big list containing all items of all lists as follows:
+```java
+ObservableList<ObservableList<String>> listOfLists = ...;
+ObservableList<String> allItems = EasyBind.flatten(listOfLists);
+```
+
+### Subscribe to values
 
 Often one wants to execute some code for _each_ value of an `ObservableValue`, that is for the _current_ value and _each new_ value. This typically results in code like this:
 
@@ -153,67 +155,59 @@ this.doSomething(observable.getValue());
 observable.addListener((obs, oldValue, newValue) -> this.doSomething(newValue));
 ```
 
-This can be expressed more concisely using the [`subscribe`](http://www.fxmisc.org/easybind/javadoc/org/fxmisc/easybind/EasyBind.html#subscribe-javafx.beans.value.ObservableValue-java.util.function.Consumer-) helper method:
+This can be expressed more concisely using the `subscribe` helper method:
 
 ```java
 EasyBind.subscribe(observable, this::doSomething);
 ```
 
-### conditional collection membership
+In case `doSomething` should not be invoked immediately, `EasyBind.listen(observable, this::doSomething)` should be used instead.
 
-[`EasyBind.includeWhen`](http://www.fxmisc.org/easybind/javadoc/org/fxmisc/easybind/EasyBind.html#includeWhen-java.util.Collection-T-javafx.beans.value.ObservableValue-) includes or excludes an element in/from a collection based on a boolean condition.
+### Conditional bindings
+Using `when` you can create bindings that should only be realized if a given observable boolean is true.
 
-Say that you want to draw a graph and highlight an edge when the edge itself or either of its end vertices is hovered over. To achieve this, let's add `.highlight` CSS class to the edge node when either of the three is hovered over and remove it when none of them is hovered over:
+#### Conditional collection membership
 
-```java
-BooleanBinding highlight = edge.hoverProperty()
-        .or(v1.hoverProperty())
-        .or(v2.hoverProperty());
-EasyBind.includeWhen(edge.getStyleClass(), "highlight", highlight);
-```
+The method `includeWhen` includes an element in a collection based on a boolean condition.
 
-```css
-.highlight { -fx-stroke: green; }
-```
-
-
-Monadic observable values
--------------------------
-
-[MonadicObservableValue](http://www.fxmisc.org/easybind/javadoc/org/fxmisc/easybind/monadic/MonadicObservableValue.html) interface adds monadic operations to `ObservableValue`.
+Say that you want to draw a line and highlight it when its hovered over. To achieve this, let's add `.highlight` CSS class to the line node when it is hovered over and remove it when it is not:
 
 ```java
-interface MonadicObservableValue<T> extends ObservableValue<T> {
-    boolean isPresent();
-    boolean isEmpty();
-    void ifPresent(Consumer<? super T> f);
-    T getOrThrow();
-    T getOrElse(T other);
-    Optional<T> getOpt();
-    MonadicBinding<T> orElse(T other);
-    MonadicBinding<T> orElse(ObservableValue<T> other);
-    MonadicBinding<T> filter(Predicate<? super T> p);
-    <U> MonadicBinding<U> map(Function<? super T, ? extends U> f);
-    <U> MonadicBinding<U> flatMap(Function<? super T, ObservableValue<U>> f);
-    <U> PropertyBinding<U> selectProperty(Function<? super T, Property<U>> f);
+EasyBind.includeWhen(edge.getStyleClass(), "highlight", line.hoverProperty());
+```
+
+### Optional observable values
+
+One often faces the situation that observables take `null` values. 
+The `wrapNullable` provides a wrapper around the observable that provides convenient helper methods similar to the `Optional` class.
+
+```java
+interface ObservableOptionalValue<T> {
+    BooleanBinding isPresent();
+    BooleanBinding isEmpty();
+    Subscription listenToValues(SimpleChangeListener<? super T> listener);
+    Subscription subscribeToValues(Consumer<? super T> subscriber);
+    EasyBinding<T> orElse(T other);
+    OptionalBinding<T> orElse(ObservableValue<T> other);
+    OptionalBinding<T> filter(Predicate<? super T> predicate);
+    OptionalBinding<U> map(Function<? super T, ? extends U> mapper);
+    OptionalBinding<U> flatMap(Function<T, Optional<U>> mapper);
+    PropertyBinding<U> selectProperty(Function<? super T, O> mapper);
+    ...
 }
 ```
 
-Read more about monadic operations in [this blog post](http://tomasmikula.github.io/blog/2014/03/26/monadic-operations-on-observablevalue.html).
-
-The last two methods, `flatMap` and `selectProperty`, let you select a nested `ObservableValue` or `Property`, respectively. The nested property can be bound, just like a normal property. Example:
+Example:
 
 ```java
-DoubleProperty changingOpacity = ...;
-Property<Number> currentTabContentOpacity = EasyBind.monadic(tabPane.selectionModelProperty())
-        .flatMap(SelectionModel::selectedItemProperty)
-        .flatMap(Tab::contentProperty)
-        .selectProperty(Node::opacityProperty);
-currentTabContentOpacity.bind(changingOpacity);
+BooleanBinding currentTabHasContent = EasyBind.wrapNullable(tabPane.getSelectionModel().selectedItemProperty())
+                                              .map(Tab::contentProperty)
+                                              .isPresent();
 ```
 
-In this example, when you switch tabs, the old tab's content opacity is unbound and the new tab's content opacity is bound to `changingOpacity`.
 
+The `EasyBind.valueAt(list, index)` and `EasyBind.valueAt(map, key)` methods return a binding containing the item at the given position in the list or map.
+The returned binding will be empty if the index/key points behind the list (or at a `null` item). 
 
 Use EasyBind in your project
 ----------------------------
@@ -283,8 +277,3 @@ libraryDependencies += "com.tobiasdiez" % "easybind" % "1.0.4-SNAPSHOT"
 
 [Download](https://oss.sonatype.org/content/repositories/snapshots/org/fxmisc/easybind/easybind/1.0.4-SNAPSHOT/) the latest JAR file and place it on your classpath.
 
-
-Links
------
-
-[Javadoc](http://www.fxmisc.org/easybind/javadoc/overview-summary.html)
