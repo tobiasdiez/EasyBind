@@ -8,7 +8,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 
-import com.tobiasdiez.easybind.optional.PropertyBinding;
 import com.tobiasdiez.easybind.select.SelectBuilder;
 
 /**

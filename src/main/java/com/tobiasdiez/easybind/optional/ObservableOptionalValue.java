@@ -15,6 +15,7 @@ import javafx.beans.value.ObservableValue;
 import com.tobiasdiez.easybind.EasyBind;
 import com.tobiasdiez.easybind.EasyBinding;
 import com.tobiasdiez.easybind.EasyObservableValue;
+import com.tobiasdiez.easybind.PropertyBinding;
 import com.tobiasdiez.easybind.SimpleChangeListener;
 import com.tobiasdiez.easybind.Subscription;
 

@@ -1,4 +1,4 @@
-package com.tobiasdiez.easybind.optional;
+package com.tobiasdiez.easybind;
 
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;

@@ -8,8 +8,6 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 
-import com.tobiasdiez.easybind.optional.PropertyBinding;
-
 /**
  * Converts an observable holding a value of type {@code T} to an observable holding a value of type {@code U},
  * using a {@code mapper} function that extracts an {@code ObservableValue<U>} from the source object.

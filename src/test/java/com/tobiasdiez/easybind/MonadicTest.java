@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.tobiasdiez.easybind.optional.OptionalBinding;
-import com.tobiasdiez.easybind.optional.PropertyBinding;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

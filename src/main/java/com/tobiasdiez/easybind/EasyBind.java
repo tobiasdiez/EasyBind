@@ -24,7 +24,6 @@ import com.tobiasdiez.easybind.optional.ObservableOptionalValue;
 import com.tobiasdiez.easybind.optional.OptionalBinding;
 import com.tobiasdiez.easybind.optional.OptionalWrapper;
 import com.tobiasdiez.easybind.optional.PreboundOptionalBinding;
-import com.tobiasdiez.easybind.optional.PropertyBinding;
 import com.tobiasdiez.easybind.select.SelectBuilder;
 
 /**
