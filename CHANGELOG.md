@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Removed
+
+## [2.0.0] - 2020-07-17
+### Added
 - Added new interface `EasyObservableList` which is a wrapper around a standard `ObservableList` providing access to a few convenient helper methods. Use `EasyBind.wrapList` to create such a wrapper around a given `ObservableList`.
 - Added new method `EasyBind.reduce(list, accumulation)` that creates a binding holding the result of the accumulation function on the provided list.
 - Added a few new methods `EasyBind.valueAt` that are essentially equivalent to the standard `Bindings.valueAt` methods except that they gracefully handle non-existing values by returning a `OptionalBinding`.
@@ -39,5 +44,6 @@ Last official release by [Tomas Mikula](https://github.com/TomasMikula/EasyBind)
 
 
 [Unreleased]: https://github.com/tobiasdiez/EasyBind/compare/v1.2.2...master
+[2.0.0]: https://github.com/tobiasdiez/EasyBind/compare/v1.2.2...v2.0.0
 [1.2.2]: https://github.com/tobiasdiez/EasyBind/compare/v1.0.3...v1.2.2
 [1.0.3]: https://github.com/tobiasdiez/EasyBind/releases/tag/v1.0.3
