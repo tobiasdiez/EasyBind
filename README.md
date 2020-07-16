@@ -251,7 +251,7 @@ Snapshot releases are deployed to Sonatype snapshot repository.
 
 | Group ID            | Artifact ID | Version        |
 | :-----------------: | :---------: | :------------: |
-| com.tobiasdiez      | easybind    | 2.0.0-SNAPSHOT |
+| com.tobiasdiez      | easybind    | 2.0.1-SNAPSHOT |
 
 #### Gradle example
 
@@ -263,7 +263,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.tobiasdiez', name: 'easybind', version: '2.0.0-SNAPSHOT'
+    compile group: 'com.tobiasdiez', name: 'easybind', version: '2.0.1-SNAPSHOT'
 }
 ```
 
@@ -272,7 +272,7 @@ dependencies {
 ```scala
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
-libraryDependencies += "com.tobiasdiez" % "easybind" % "2.0.0-SNAPSHOT"
+libraryDependencies += "com.tobiasdiez" % "easybind" % "2.0.1-SNAPSHOT"
 ```
 
 #### Manual download
