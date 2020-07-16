@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -412,26 +413,31 @@ public class EasyBind {
     }
 
     /**
-     * Sync the content of the {@code target} list with the {@code source} list.
+     * Synchronizes the content of the {@code target} list with the {@code source} list.
+     * <p>
+     * Calling this method ensures that the {@code target} contains the same elements as the {@code source}.
+     * If the content of the {@code target} changes, the {@code source} will be updated automatically.
+     * <p>
+     * Once {@code source} is bound to an {@code ObservableList}, it must not be changed directly anymore.
+     * <p>
+     * The binding can be removed by calling {@link Subscription#unsubscribe()} on the returned subscription.
+     * This is the only difference to {@link Bindings#bindContent(List, ObservableList)}.
      *
+     * @param <T>    the type of the {@code source} elements
+     * @param target the target list
+     * @param source the source list
      * @return a subscription that can be used to stop syncing the lists.
      */
-    public static <T> Subscription listBind(List<? super T> target, ObservableList<? extends T> source) {
-        target.clear();
-        target.addAll(source);
-        ListChangeListener<? super T> listener = change -> {
-            while (change.next()) {
-                int from = change.getFrom();
-                int to = change.getTo();
-                if (change.wasPermutated()) {
-                    target.subList(from, to).clear();
-                    target.addAll(from, source.subList(from, to));
-                } else {
-                    target.subList(from, from + change.getRemovedSize()).clear();
-                    target.addAll(from, source.subList(from, from + change.getAddedSize()));
-                }
-            }
-        };
+    public static <T> Subscription bindContent(List<? super T> target, ObservableList<? extends T> source) {
+        if (target instanceof ObservableList) {
+            //noinspection unchecked
+            ((ObservableList<? super T>) target).setAll(source);
+        } else {
+            target.clear();
+            target.addAll(source);
+        }
+
+        ListChangeListener<? super T> listener = new ListContentBinding<>(target);
         source.addListener(listener);
         return () -> source.removeListener(listener);
     }

@@ -64,8 +64,8 @@ public final class When {
      * was {@code true}, stop the synchronization {@code target}'s content with
      * {@code source}'s content.
      */
-    public <T> Subscription listBind(List<? super T> target, ObservableList<? extends T> source) {
-        return bind(() -> EasyBind.listBind(target, source));
+    public <T> Subscription bindContent(List<? super T> target, ObservableList<? extends T> source) {
+        return bind(() -> EasyBind.bindContent(target, source));
     }
 
     Subscription bind(Supplier<? extends Subscription> bindFn) {

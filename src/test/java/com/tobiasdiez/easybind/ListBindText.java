@@ -16,7 +16,7 @@ public class ListBindText {
         source.addAll("a", "b", "c");
 
         ObservableList<String> target = FXCollections.observableArrayList();
-        Subscription sub = EasyBind.listBind(target, source);
+        Subscription sub = EasyBind.bindContent(target, source);
 
         assertEquals(source, target);
 

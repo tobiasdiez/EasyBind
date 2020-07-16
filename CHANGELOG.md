@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - Split `MonadicBinding` into a part which is really concerned with optionals (new `ObervableOptionalValue`) and one which provides helper methods for a fluent interface for normal bindings (new `EasyBinding`).
 - Renamed `flatMap` to `mapObservable` to avoid clashes with the corresponding method in `Optional`.
 - Renamed subscribe methods that accept listeners to `listen`, which invoke the given listener every time the value changes. In contrast, the `subscribe` method also invokes the given subscriber upon registration. 
+- Renamed `EasyBind.listBind` to `bindContent` in order to align with the naming of `Bindings.bindContent`.
 
 ### Removed
 - Removed `EasyBind.filter(ObservableValue<T> source, Predicate<? super T> predicate)`. Use `EasyBind.wrapNullable(source).filter(predicate)` instead. 
