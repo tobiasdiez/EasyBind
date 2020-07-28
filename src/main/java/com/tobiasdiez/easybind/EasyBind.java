@@ -295,12 +295,12 @@ public class EasyBind {
         return new MappedList<>(sourceList, f);
     }
 
-    public static <T> ObservableList<T> flatten(ObservableList<ObservableList<? extends T>> sources) {
+	public static <T> EasyObservableList<T> flatten(ObservableList<ObservableList<? extends T>> sources) {
         return new FlattenedList<>(sources);
     }
 
     @SafeVarargs
-    public static <T> ObservableList<T> concat(ObservableList<? extends T>... sources) {
+	public static <T> EasyObservableList<T> concat(ObservableList<? extends T>... sources) {
         return new FlattenedList<>(FXCollections.observableArrayList(sources));
     }
 
