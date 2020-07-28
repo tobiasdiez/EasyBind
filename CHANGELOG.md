@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+- Added support for JDK >= 9. [#21](https://github.com/tobiasdiez/EasyBind/issues/21)
 ### Changed
 ### Removed
 
