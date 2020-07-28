@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -67,6 +68,19 @@ public interface EasyObservableList<E> extends ObservableList<E> {
         FilteredList<E> filteredList = new FilteredList<>(this);
         filteredList.predicateProperty().bind(predicate);
         return filteredList;
+    }
+    
+	/*
+	 * Sadly, we cannot easily let {@link FilteredList} implement {@link EasyObservableList}, because that class is final. Neither can we return
+	 * both at once, as intersection types do not exist in Java. Therefore, the easiest way is to simply create two methods, one for each return
+	 * type.
+	 */
+    default EasyObservableList<E> filteredWrapped(ObservableValue<? extends Predicate<E>> predicate) {
+    	return EasyBind.wrapList(filtered(predicate));
+    }
+
+    default <U> EasyObservableList<U> mapped(Function<? super E, ? extends U> f) {
+        return new MappedList<>(this, f);
     }
 
     /**
