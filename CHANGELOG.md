@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - Added support for JDK >= 9. [#21](https://github.com/tobiasdiez/EasyBind/issues/21)
+- Added `EasyObservableList#mapped` as fluid alternative to `EasyBind#map`
+- Added `EasyObservableList#filteredWrapped` as an alternative to `EasyObservableList#filtered` that returns an `EasyObservableList` instead of a `FilteredList`.
+  - This allows fluid method chaining without having to wrap the `FilteredList` using `EasyBind#wrapList` again.
+  - It is a temporary workaround that will be removed once https://github.com/openjdk/jfx/pull/278 is merged.
+
 ### Changed
+- `EasyBind#flatten` and `EasyBind#concat` now return an `EasyObservableList` instead of an `ObservableList`.
+
 ### Removed
 
 ## [2.0.0] - 2020-07-17

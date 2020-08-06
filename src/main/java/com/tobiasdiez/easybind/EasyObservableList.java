@@ -74,13 +74,22 @@ public interface EasyObservableList<E> extends ObservableList<E> {
 	 * Sadly, we cannot easily let {@link FilteredList} implement {@link EasyObservableList}, because that class is final. Neither can we return
 	 * both at once, as intersection types do not exist in Java. Therefore, the easiest way is to simply create two methods, one for each return
 	 * type.
+	 *
+	 * This method will be deleted once https://github.com/openjdk/jfx/pull/278 is merged
 	 */
     default EasyObservableList<E> filteredWrapped(ObservableValue<? extends Predicate<E>> predicate) {
     	return EasyBind.wrapList(filtered(predicate));
     }
 
+    /**
+     * Creates a {@link MappedList} wrapper of this list using the specified mapping function.
+     *
+     * @param f the mapping function to transform the items
+     * @return new {@code MappedList}
+     * @see EasyBind#map(ObservableList, Function)
+     */
     default <U> EasyObservableList<U> mapped(Function<? super E, ? extends U> f) {
-        return new MappedList<>(this, f);
+        return EasyBind.map(this, f);
     }
 
     /**
