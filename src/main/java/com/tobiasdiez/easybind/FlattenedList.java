@@ -10,7 +10,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableListBase;
 
-class FlattenedList<E> extends ObservableListBase<E> {
+class FlattenedList<E> extends ObservableListBase<E> implements EasyObservableList<E> {
     private final ObservableList<ObservableList<? extends E>> sourceLists;
 
     FlattenedList(ObservableList<ObservableList<? extends E>> sourceLists) {
