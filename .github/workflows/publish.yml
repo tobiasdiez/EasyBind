@@ -1,4 +1,4 @@
-name: Publish
+name: Publish snapshot
 
 on:
   push:
@@ -6,9 +6,7 @@ on:
 
 jobs:
   publish:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK
@@ -19,8 +17,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build
       run: ./gradlew build
-    - name: Publish to the Maven Central and Github Repository
-      run: ./gradlew publish
+    - name: Publish to Sonatype (for snapshots) or to Maven Central and Github Repository (for releases)
+      run: ./gradlew publish closeAndReleaseRepository
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}

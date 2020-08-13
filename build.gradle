@@ -5,6 +5,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.9'
     id 'org.hibernate.build.maven-repo-auth' version '3.0.2'
     id 'org.javamodularity.moduleplugin' version '1.7.0'
+    id 'io.codearte.nexus-staging' version '0.21.2'
 }
 
 repositories {
@@ -101,6 +102,14 @@ signing {
     useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
     sign publishing.publications.mavenJava
 }
+
+nexusStaging {
+    username = System.getenv("MAVEN_USERNAME")
+    password = System.getenv("MAVEN_PASSWORD")
+}
+
+// Don't publish snapshots to Maven Central
+closeAndReleaseRepository.onlyIf { isReleaseVersion }
 
 test {
     useJUnitPlatform()
