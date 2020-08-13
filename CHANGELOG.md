@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Removed
+
+## [2.1.0] - 2020-08-13
+### Added
 - Added support for JDK >= 9. [#21](https://github.com/tobiasdiez/EasyBind/issues/21)
 - Added `EasyObservableList#mapped` as fluid alternative to `EasyBind#map`
 - Added `EasyObservableList#filteredWrapped` as an alternative to `EasyObservableList#filtered` that returns an `EasyObservableList` instead of a `FilteredList`.
