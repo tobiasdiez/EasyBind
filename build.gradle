@@ -110,6 +110,8 @@ nexusStaging {
 
 // Don't publish snapshots to Maven Central
 closeAndReleaseRepository.onlyIf { isReleaseVersion }
+closeRepository.onlyIf { isReleaseVersion }
+releaseRepository.onlyIf { isReleaseVersion }
 
 test {
     useJUnitPlatform()
