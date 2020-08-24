@@ -5,7 +5,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.9'
     id 'org.hibernate.build.maven-repo-auth' version '3.0.3'
     id 'org.javamodularity.moduleplugin' version '1.7.0'
-    id 'io.codearte.nexus-staging' version '0.21.2'
+    id 'io.codearte.nexus-staging' version '0.22.0'
 }
 
 repositories {
