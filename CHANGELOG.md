@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 ### Changed
+- Mark JavaFX dependency as transitive. Thanks to Sebastian Stenzel.
+
 ### Removed
 
 ## [2.1.0] - 2020-08-13
