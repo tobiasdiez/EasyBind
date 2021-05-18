@@ -13,7 +13,7 @@ repositories {
 }
 
 group = 'com.tobiasdiez'
-version = '2.2'
+version = '2.2.1-SNAPSHOT'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 sourceCompatibility = JavaVersion.VERSION_1_9
