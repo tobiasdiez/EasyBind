@@ -214,7 +214,7 @@ Use EasyBind in your project
 
 ### Stable release
 
-Current stable release is `2.1.0`.
+Current stable release is `2.2.0`.
 It contains many new features, but also breaks backwards compatibility to the `1.x` versions as many methods have been renamed; see the [Changelog](CHANGELOG.md) for details.
 In case you are upgrading from the `EasyBind` library developed by by Tomas Mikula, then the easiest option is to use version `1.2.2` which includes a few improvements and bug fixes while being compatible with older versions.
 
@@ -222,20 +222,20 @@ In case you are upgrading from the `EasyBind` library developed by by Tomas Miku
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| com.tobiasdiez      | easybind    | 2.1.0   |
+| com.tobiasdiez      | easybind    | 2.2.0   |
 
 #### Gradle example
 
 ```groovy
 dependencies {
-    compile group: 'com.tobiasdiez', name: 'easybind', version: '2.1.0'
+    compile group: 'com.tobiasdiez', name: 'easybind', version: '2.2.0'
 }
 ```
 
 #### Sbt example
 
 ```scala
-libraryDependencies += "com.tobiasdiez" % "easybind" % "2.1.0"
+libraryDependencies += "com.tobiasdiez" % "easybind" % "2.2.0"
 ```
 
 #### Manual download
@@ -251,7 +251,7 @@ Snapshot releases are deployed to Sonatype snapshot repository.
 
 | Group ID            | Artifact ID | Version        |
 | :-----------------: | :---------: | :------------: |
-| com.tobiasdiez      | easybind    | 2.1.1-SNAPSHOT |
+| com.tobiasdiez      | easybind    | 2.2.1-SNAPSHOT |
 
 #### Gradle example
 
@@ -263,7 +263,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.tobiasdiez', name: 'easybind', version: '2.1.1-SNAPSHOT'
+    compile group: 'com.tobiasdiez', name: 'easybind', version: '2.2.1-SNAPSHOT'
 }
 ```
 
@@ -272,7 +272,7 @@ dependencies {
 ```scala
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
-libraryDependencies += "com.tobiasdiez" % "easybind" % "2.1.1-SNAPSHOT"
+libraryDependencies += "com.tobiasdiez" % "easybind" % "2.2.1-SNAPSHOT"
 ```
 
 #### Manual download
