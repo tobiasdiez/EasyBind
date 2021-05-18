@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 ### Changed
 - Mark JavaFX dependency as transitive. Thanks to Sebastian Stenzel.
+- Remove `classifier = linux` for JavaFX dependency in the `pom` file. This makes it easier to use the library on different OS without pulling-in the wrong dependencies.
 
 ### Removed
 
