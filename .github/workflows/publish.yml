@@ -1,4 +1,4 @@
-name: Publish snapshot
+name: Publish
 
 on:
   push:
@@ -7,16 +7,22 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
         java-version: 14.0.1
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
     - name: Build
       run: ./gradlew build
+
     - name: Publish to Sonatype (for snapshots) or to Maven Central and Github Repository (for releases)
       run: ./gradlew publish closeAndReleaseRepository
       env:
