@@ -34,7 +34,7 @@ Creates a binding whose value is a mapping of some observable value.
 
 ```java
 ObservableStringValue str = ...;
-Binding<Integer> lenght = EasyBind.map(str, String::length);
+Binding<Integer> length = EasyBind.map(str, String::length);
 ```
 
 ### Combine observables
@@ -65,7 +65,7 @@ Returns a mapped view of an `ObservableList`.
 ObservableList<String> items = ...;
 ObservableList<Integer> lengths = EasyBind.map(items, String::getLength);
 ```
-In the above example, `lenghts` is updated as elements are added and removed from `items`.
+In the above example, `lengths` is updated as elements are added and removed from `items`.
 By design, the elements of the new observable are calculated on the fly whenever they are needed (e.g. if `get` is called).
 Thus, this is prefect for light-weight operations.
 If the conversion is a cost-intensive operation or if the elements of the list are often accessed, then using `mapBacked` is a better option.
