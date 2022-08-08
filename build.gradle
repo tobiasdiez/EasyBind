@@ -4,7 +4,7 @@ plugins {
     id 'signing'
     id 'org.openjfx.javafxplugin' version '0.0.13'
     id 'org.hibernate.build.maven-repo-auth' version '3.0.3'
-    id 'org.javamodularity.moduleplugin' version '1.8.11'
+    id 'org.javamodularity.moduleplugin' version '1.8.12'
     id 'io.codearte.nexus-staging' version '0.30.0'
 }
 
