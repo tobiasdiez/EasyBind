@@ -34,6 +34,7 @@ java {
 }
 
 javafx {
+    version = "19-ea+10"
     version = "17"
     modules = ['javafx.base']
 }

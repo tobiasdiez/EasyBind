@@ -76,13 +76,13 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      * @return an observable that has the same value as this observable, if present, otherwise {@code null}.
      */
     default EasyObservableValue<T> asOrdinary() {
-        return orElse((T) null);
+        return orElseOpt((T) null);
     }
 
     /**
      * Returns a new observable that holds the value held by this observable, or {@code other} when this observable is empty.
      */
-    EasyBinding<T> orElse(T other);
+    EasyBinding<T> orElseOpt(T other);
 
     /**
      * Returns a new observable that holds the value held by this observable, or the value held by {@code other} when this observable is empty.
@@ -96,7 +96,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      * @param predicate the predicate to apply to a value, if present
      * @throws NullPointerException if the predicate is {@code null}
      */
-    OptionalBinding<T> filter(Predicate<? super T> predicate);
+    OptionalBinding<T> filterOpt(Predicate<? super T> predicate);
 
     /**
      * Returns a new observable that holds the result of applying the given function to the value as this observable, if present, otherwise empty.
@@ -105,7 +105,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      * @param mapper the mapping to apply to a value, if present
      * @see EasyBind#map(ObservableValue, Function)
      */
-    <U> OptionalBinding<U> map(Function<? super T, ? extends U> mapper);
+    <U> OptionalBinding<U> mapOpt(Function<? super T, ? extends U> mapper);
 
 
     /**
@@ -118,7 +118,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      *
      * @param mapper the mapping to apply to a value, if present
      */
-    <U> OptionalBinding<U> flatMap(Function<T, Optional<U>> mapper);
+    <U> OptionalBinding<U> flatMapOpt(Function<T, Optional<U>> mapper);
 
     /**
      * Returns a new observable that holds the value of the observable resulting from applying the given function to the value as this observable.
