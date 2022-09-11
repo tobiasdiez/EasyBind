@@ -21,6 +21,7 @@ import com.tobiasdiez.easybind.Subscription;
 
 /**
  * An {@link ObservableValue} that may or may not contain values (i.e. an {@link Optional} in the category of observable values).
+ * The JavaFX19 methods with the same name do not return an Optional! If you need an Optional use the methods with the suffix Opt
  */
 public interface ObservableOptionalValue<T> extends ObservableObjectValue<Optional<T>> {
 
@@ -91,7 +92,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
 
     /**
      * Returns a new observable that holds the same value as this observable when the value is present and matches the given predicate,
-     * otherwise empty.
+     * otherwise Empty Optional.
      *
      * @param predicate the predicate to apply to a value, if present
      * @throws NullPointerException if the predicate is {@code null}

@@ -13,7 +13,7 @@ repositories {
 }
 
 group = 'com.tobiasdiez'
-version = '2.2.1-SNAPSHOT'
+version = '3.0.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 sourceCompatibility = JavaVersion.VERSION_1_9
@@ -35,7 +35,6 @@ java {
 
 javafx {
     version = "19-ea+10"
-    version = "17"
     modules = ['javafx.base']
 }
 
@@ -137,6 +136,11 @@ test {
     }
 }
 
+compileTestJava {
+    moduleOptions {
+        compileOnClasspath = true
+    }
+}
 tasks.withType(Javadoc) {
     // Ignore warnings because of missing elements
     options.addStringOption('Xdoclint:all,-missing', '-quiet')
