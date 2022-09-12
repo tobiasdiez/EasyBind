@@ -13,7 +13,7 @@ repositories {
 }
 
 group = 'com.tobiasdiez'
-version = '3.0.0'
+version = '2.2.0'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 sourceCompatibility = JavaVersion.VERSION_1_9
@@ -34,7 +34,7 @@ java {
 }
 
 javafx {
-    version = "19-ea+10"
+    version = "18" // change to 19 when released
     modules = ['javafx.base']
 }
 
@@ -136,11 +136,14 @@ test {
     }
 }
 
+/* uncomment if you want to compile the test in eclipse
 compileTestJava {
     moduleOptions {
         compileOnClasspath = true
     }
 }
+*/
+
 tasks.withType(Javadoc) {
     // Ignore warnings because of missing elements
     options.addStringOption('Xdoclint:all,-missing', '-quiet')

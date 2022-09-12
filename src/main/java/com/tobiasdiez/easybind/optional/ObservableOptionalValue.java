@@ -92,7 +92,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
 
     /**
      * Returns a new observable that holds the same value as this observable when the value is present and matches the given predicate,
-     * otherwise Empty Optional.
+     * otherwise empty optional.
      *
      * @param predicate the predicate to apply to a value, if present
      * @throws NullPointerException if the predicate is {@code null}

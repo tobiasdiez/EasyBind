@@ -14,7 +14,8 @@ You therefore have to rename the methods in your code to match the renamed.
 ## Getting started
 
 The simplest way is to use the `EasyBind.wrap*` methods to create wrappers around standard JavaFX observable values or lists.
-The wrapper then gives you access to all the features of EasyBind.a
+The wrapper then gives you access to all the features of EasyBind.
+
 For example,
 
 ```java
@@ -207,10 +208,10 @@ interface ObservableOptionalValue<T> {
     Subscription listenToValues(SimpleChangeListener<? super T> listener);
     Subscription subscribeToValues(Consumer<? super T> subscriber);
     EasyBinding<T> orElse(T other);
-    OptionalBinding<T> orElse(ObservableValue<T> other);
-    OptionalBinding<T> filter(Predicate<? super T> predicate);
-    OptionalBinding<U> map(Function<? super T, ? extends U> mapper);
-    OptionalBinding<U> flatMap(Function<T, Optional<U>> mapper);
+    OptionalBinding<T> orElseOpt(ObservableValue<T> other);
+    OptionalBinding<T> filterOpt(Predicate<? super T> predicate);
+    OptionalBinding<U> mapOpt(Function<? super T, ? extends U> mapper);
+    OptionalBinding<U> flatMapOpt(Function<T, Optional<U>> mapper);
     PropertyBinding<U> selectProperty(Function<? super T, O> mapper);
     ...
 }
