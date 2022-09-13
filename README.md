@@ -6,11 +6,6 @@ See below for [how to install EasyBind in your project](#use-easybind-in-your-pr
 
 This is a maintained fork of the [EasyBind library by Tomas Mikula](https://github.com/TomasMikula/EasyBind), which sadly is dormant at the moment.
 
-## JavaFX 19 - Breaking Changes
-
-JavaFX 19 introduced new methdods `flatMap`, `map`, `orElse`, `filter` which conflict with the methods from EasyBind. In contrast to the EasyBind implementation they do return `null` and not Optional. Therefore the methods from EasyBind have been renamed with the suffix `opt` to avoid conflicts.
-You therefore have to rename the methods in your code to match the renamed.
-
 ## Getting started
 
 The simplest way is to use the `EasyBind.wrap*` methods to create wrappers around standard JavaFX observable values or lists.
