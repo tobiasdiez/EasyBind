@@ -164,7 +164,7 @@ public class MonadicTest {
         StringProperty s2 = new SimpleStringProperty("b");
         StringProperty s3 = new SimpleStringProperty("c");
 
-        OptionalBinding<String> firstNonNull = EasyBind.wrapNullable(s1).orElse(s2).orElse(s3);
+        OptionalBinding<String> firstNonNull = EasyBind.wrapNullable(s1).orElseOpt(s2).orElseOpt(s3);
         assertEquals(Optional.of("a"), firstNonNull.getValue());
 
         s2.set(null);

@@ -61,7 +61,7 @@ public abstract class PreboundOptionalBinding<T> extends PreboundBinding<Optiona
     }
 
     @Override
-    public OptionalBinding<T> orElse(ObservableValue<T> other) {
+    public OptionalBinding<T> orElseOpt(ObservableValue<T> other) {
         return new FirstNonNullBinding<>(this.asOrdinary(), other);
     }
 
