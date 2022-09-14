@@ -89,7 +89,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
     /**
      * Returns a new observable that holds the value held by this observable, or the value held by {@code other} when this observable is empty.
      */
-    OptionalBinding<T> orElse(ObservableValue<T> other);
+    OptionalBinding<T> orElseOpt(ObservableValue<T> other);
 
     /**
      * Returns a new observable that holds the same value as this observable when the value is present and matches the given predicate,
