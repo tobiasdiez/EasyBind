@@ -202,7 +202,7 @@ interface ObservableOptionalValue<T> {
     BooleanBinding isEmpty();
     Subscription listenToValues(SimpleChangeListener<? super T> listener);
     Subscription subscribeToValues(Consumer<? super T> subscriber);
-    EasyBinding<T> orElse(T other);
+    EasyBinding<T> orElseOpt(T other);
     OptionalBinding<T> orElseOpt(ObservableValue<T> other);
     OptionalBinding<T> filter(Predicate<? super T> predicate);
     OptionalBinding<U> mapOpt(Function<? super T, ? extends U> mapper);
