@@ -204,7 +204,7 @@ interface ObservableOptionalValue<T> {
     Subscription subscribeToValues(Consumer<? super T> subscriber);
     EasyBinding<T> orElse(T other);
     OptionalBinding<T> orElseOpt(ObservableValue<T> other);
-    OptionalBinding<T> filterOpt(Predicate<? super T> predicate);
+    OptionalBinding<T> filter(Predicate<? super T> predicate);
     OptionalBinding<U> mapOpt(Function<? super T, ? extends U> mapper);
     OptionalBinding<U> flatMapOpt(Function<T, Optional<U>> mapper);
     PropertyBinding<U> selectProperty(Function<? super T, O> mapper);
