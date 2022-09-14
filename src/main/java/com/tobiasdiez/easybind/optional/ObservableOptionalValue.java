@@ -76,13 +76,15 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      * @return an observable that has the same value as this observable, if present, otherwise {@code null}.
      */
     default EasyObservableValue<T> asOrdinary() {
-        return orElse((T) null);
+        return orElseOpt((T) null);
     }
 
     /**
      * Returns a new observable that holds the value held by this observable, or {@code other} when this observable is empty.
+     * 
+     * <p>This method is similar to the JavaFX 19 method {@code orElse} but recognizes an empty optional instead of {@code null} values.
      */
-    EasyBinding<T> orElse(T other);
+    EasyBinding<T> orElseOpt(T other);
 
     /**
      * Returns a new observable that holds the value held by this observable, or the value held by {@code other} when this observable is empty.
@@ -91,7 +93,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
 
     /**
      * Returns a new observable that holds the same value as this observable when the value is present and matches the given predicate,
-     * otherwise empty.
+     * otherwise it holds an empty optional.
      *
      * @param predicate the predicate to apply to a value, if present
      * @throws NullPointerException if the predicate is {@code null}
@@ -99,13 +101,17 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
     OptionalBinding<T> filter(Predicate<? super T> predicate);
 
     /**
-     * Returns a new observable that holds the result of applying the given function to the value as this observable, if present, otherwise empty.
-     * If the function returns {@code null}, then this is converted to an empty optional.
+     * Returns an {@code ObservableValue} that holds the result of applying the given mapping function on this value.
+     * The result is updated when this {@code ObservableOptionalValue} changes. If this value is an empty optional, no
+     * mapping is applied and the resulting value is also an empty optional. 
+     * If the function returns {@code null}, then this is converted into an empty optional.
+     *
+     * <p>This method is similar to the JavaFX 19 method {@code map} but with special handling of empty optionals instead of {@code null} values.
      *
      * @param mapper the mapping to apply to a value, if present
      * @see EasyBind#map(ObservableValue, Function)
      */
-    <U> OptionalBinding<U> map(Function<? super T, ? extends U> mapper);
+    <U> OptionalBinding<U> mapOpt(Function<? super T, ? extends U> mapper);
 
 
     /**
@@ -116,9 +122,12 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      * invoked, {@code flatMap} does not wrap it within an additional
      * {@code Optional}.
      *
+     * <p>This method should not be confused with the JavaFX 19 method {@code flatMap} which accepts a {@code mapper} producing an observable value,
+     * and not an {@code Optional}.
+     *
      * @param mapper the mapping to apply to a value, if present
      */
-    <U> OptionalBinding<U> flatMap(Function<T, Optional<U>> mapper);
+    <U> OptionalBinding<U> flatMapOpt(Function<T, Optional<U>> mapper);
 
     /**
      * Returns a new observable that holds the value of the observable resulting from applying the given function to the value as this observable.

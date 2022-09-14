@@ -10,24 +10,30 @@ This is a maintained fork of the [EasyBind library by Tomas Mikula](https://gith
 
 The simplest way is to use the `EasyBind.wrap*` methods to create wrappers around standard JavaFX observable values or lists.
 The wrapper then gives you access to all the features of EasyBind.
+
 For example,
+
 ```java
 ObservableStringValue str = ...;
 Binding<Integer> length = EasyBind.wrap(str)
                                   .map(String::length);
 ```
+
 creates a `Binding` that holds the length of `str`.
-Similarly, 
+Similarly,
+
 ```java
 ObservableList<String> list = ...;
 Binding<Boolean> allMatch = EasyBind.wrap(list)
                                     .allMatch(String:isEmpty) 
 ```
+
 yields a `Binding` that reflects whether all items in the list are empty strings.
 In addition to the `wrap*` methods, EasyBind also provides direct shortcuts for common functionality.
 For example, the above binding could be more shortly written as `EasyBind.map(String::length)`.
 
 ## Features
+
 ### Map observables
 
 Creates a binding whose value is a mapping of some observable value.
@@ -51,20 +57,24 @@ Binding<String> substring = EasyBind.combine(str, start, end, String::substring)
 ### Select properties
 
 Type-safe alternative to `Bindings.select*` methods.
+
 ```java
 Binding<Boolean> showing = EasyBind.select(control.sceneProperty()) 
                                    .select(scene -> scene.windowProperty()) 
                                    .selectObject(window -> window.showingProperty());
 ```
+
 The resulting binding is updated whenever one of the properties in the selection graph changes.
 
 ### Map items in a lists
 
 Returns a mapped view of an `ObservableList`.
+
 ```java
 ObservableList<String> items = ...;
 ObservableList<Integer> lengths = EasyBind.map(items, String::getLength);
 ```
+
 In the above example, `lengths` is updated as elements are added and removed from `items`.
 By design, the elements of the new observable are calculated on the fly whenever they are needed (e.g. if `get` is called).
 Thus, this is prefect for light-weight operations.
@@ -72,12 +82,13 @@ If the conversion is a cost-intensive operation or if the elements of the list a
 Here the elements of the list are converted once and then stored in memory.
 
 ### Reduce observable lists
+
 Using `reduce` you can aggregate an observable list of items into a single observable value.
 
 ```java
 ObservableList<String> items = ...;
 ObservableValue<Boolean> totalLength = EasyBind.reduce(items, stream -> stream.mapToInt(String::length).sum());
-``` 
+```
 
 ### Reduce observable lists of observables
 
@@ -129,11 +140,13 @@ ObservableValue<Boolean> allTabsSaved = EasyBind.combine(
 Button saveAllButton = new Button(...);
 saveAllButton.disableProperty().bind(allTabsSaved);
 ```
+
 </details>
 
-
 ### Concat lists (of observable lists)
+
 The `concat` method combines two or more observable lists into one big list containing all items.
+
 ```java
 ObservableList<String> listA = ...;
 ObservableList<String> listB = ...;
@@ -141,6 +154,7 @@ ObservableList<String> combinedList = EasyBind.concat(listA, listB);
 ```
 
 Similarly, an observable list of observable lists can be combined into one big list containing all items of all lists as follows:
+
 ```java
 ObservableList<ObservableList<String>> listOfLists = ...;
 ObservableList<String> allItems = EasyBind.flatten(listOfLists);
@@ -164,6 +178,7 @@ EasyBind.subscribe(observable, this::doSomething);
 In case `doSomething` should not be invoked immediately, `EasyBind.listen(observable, this::doSomething)` should be used instead.
 
 ### Conditional bindings
+
 Using `when` you can create bindings that should only be realized if a given observable boolean is true.
 
 #### Conditional collection membership
@@ -178,7 +193,7 @@ EasyBind.includeWhen(edge.getStyleClass(), "highlight", line.hoverProperty());
 
 ### Optional observable values
 
-One often faces the situation that observables take `null` values. 
+One often faces the situation that observables take `null` values.
 The `wrapNullable` provides a wrapper around the observable that provides convenient helper methods similar to the `Optional` class.
 
 ```java
@@ -188,10 +203,10 @@ interface ObservableOptionalValue<T> {
     Subscription listenToValues(SimpleChangeListener<? super T> listener);
     Subscription subscribeToValues(Consumer<? super T> subscriber);
     EasyBinding<T> orElse(T other);
-    OptionalBinding<T> orElse(ObservableValue<T> other);
+    OptionalBinding<T> orElseOpt(ObservableValue<T> other);
     OptionalBinding<T> filter(Predicate<? super T> predicate);
-    OptionalBinding<U> map(Function<? super T, ? extends U> mapper);
-    OptionalBinding<U> flatMap(Function<T, Optional<U>> mapper);
+    OptionalBinding<U> mapOpt(Function<? super T, ? extends U> mapper);
+    OptionalBinding<U> flatMapOpt(Function<T, Optional<U>> mapper);
     PropertyBinding<U> selectProperty(Function<? super T, O> mapper);
     ...
 }
@@ -205,9 +220,8 @@ BooleanBinding currentTabHasContent = EasyBind.wrapNullable(tabPane.getSelection
                                               .isPresent();
 ```
 
-
 The `EasyBind.valueAt(list, index)` and `EasyBind.valueAt(map, key)` methods return a binding containing the item at the given position in the list or map.
-The returned binding will be empty if the index/key points behind the list (or at a `null` item). 
+The returned binding will be empty if the index/key points behind the list (or at a `null` item).
 
 Use EasyBind in your project
 ----------------------------
@@ -241,7 +255,6 @@ libraryDependencies += "com.tobiasdiez" % "easybind" % "2.2.0"
 #### Manual download
 
 [Download](https://github.com/tobiasdiez/EasyBind/releases) the JAR file and place it on your classpath.
-
 
 ### Snapshot releases
 
@@ -278,4 +291,3 @@ libraryDependencies += "com.tobiasdiez" % "easybind" % "2.2.1-SNAPSHOT"
 #### Manual download
 
 [Download](https://oss.sonatype.org/content/repositories/snapshots/com/tobiasdiez/easybind/) the latest JAR file and place it on your classpath.
-

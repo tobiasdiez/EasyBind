@@ -28,7 +28,7 @@ public abstract class PreboundOptionalBinding<T> extends PreboundBinding<Optiona
     }
 
     @Override
-    public <U> OptionalBinding<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> OptionalBinding<U> mapOpt(Function<? super T, ? extends U> mapper) {
         return new PreboundOptionalBinding<U>(dependencies) {
 
             @Override
@@ -39,7 +39,7 @@ public abstract class PreboundOptionalBinding<T> extends PreboundBinding<Optiona
     }
 
     @Override
-    public <U> OptionalBinding<U> flatMap(Function<T, Optional<U>> mapper) {
+    public <U> OptionalBinding<U> flatMapOpt(Function<T, Optional<U>> mapper) {
         // TODO: The method should actually accept Function<? super T, ? extends Optional<? extends U>> mapper but this currently leads to compiler errors (with Java 8?)
         return new PreboundOptionalBinding<U>(dependencies) {
 
@@ -51,7 +51,7 @@ public abstract class PreboundOptionalBinding<T> extends PreboundBinding<Optiona
     }
 
     @Override
-    public EasyBinding<T> orElse(T other) {
+    public EasyBinding<T> orElseOpt(T other) {
         return new EasyPreboundBinding<T>(dependencies) {
             @Override
             protected T computeValue() {

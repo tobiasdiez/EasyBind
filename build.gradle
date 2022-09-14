@@ -34,7 +34,7 @@ java {
 }
 
 javafx {
-    version = "17"
+    version = "19"
     modules = ['javafx.base']
 }
 
@@ -135,6 +135,14 @@ test {
         showStackTraces true
     }
 }
+
+/* uncomment if you want to compile the test in eclipse
+compileTestJava {
+    moduleOptions {
+        compileOnClasspath = true
+    }
+}
+*/
 
 tasks.withType(Javadoc) {
     // Ignore warnings because of missing elements
