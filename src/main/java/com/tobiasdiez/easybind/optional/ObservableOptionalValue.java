@@ -98,7 +98,7 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
      * @param predicate the predicate to apply to a value, if present
      * @throws NullPointerException if the predicate is {@code null}
      */
-    OptionalBinding<T> filterOpt(Predicate<? super T> predicate);
+    OptionalBinding<T> filter(Predicate<? super T> predicate);
 
     /**
      * Returns an {@code ObservableValue} that holds the result of applying the given mapping function on this value.

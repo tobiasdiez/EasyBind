@@ -66,7 +66,7 @@ public abstract class PreboundOptionalBinding<T> extends PreboundBinding<Optiona
     }
 
     @Override
-    public OptionalBinding<T> filterOpt(Predicate<? super T> predicate) {
+    public OptionalBinding<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate);
         return new PreboundOptionalBinding<T>(dependencies) {
             @Override
