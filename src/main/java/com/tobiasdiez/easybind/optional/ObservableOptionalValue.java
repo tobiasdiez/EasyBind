@@ -88,6 +88,9 @@ public interface ObservableOptionalValue<T> extends ObservableObjectValue<Option
 
     /**
      * Returns a new observable that holds the value held by this observable, or the value held by {@code other} when this observable is empty.
+     *
+     * <p>This method is similar to the JavaFX 19 method {@code orElse} but recognizes an empty optional instead of {@code null} values
+     * and allows an observable as fallback.
      */
     OptionalBinding<T> orElseOpt(ObservableValue<T> other);
 
